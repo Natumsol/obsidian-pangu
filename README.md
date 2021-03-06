@@ -1,6 +1,6 @@
 ## Obsidian Pangu Plugin
 
-A small plugin aims to add space between Chinese Characters and English Alphabet, For Example:
+A small plugin aims to add space between Chinese Characters and English Alphabet, and it is a boon for typographically compulsive people. For Example:
 
 ```diff
 - 大多数人在20到30岁就已经过完自己的一生；一过了这个年龄段，他们就变成自己的影子。

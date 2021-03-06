@@ -1,7 +1,7 @@
 {
-  "name": "obsidian-sample-plugin",
-  "version": "1.0.0",
-  "description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+  "name": "obsidian-pangu",
+  "version": "1.1.0",
+  "description": "A small plugin aims to add space between Chinese Characters and English Alphabet, and it is a boon for typographically compulsive people. ",
   "main": "main.js",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
