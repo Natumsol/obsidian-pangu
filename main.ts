@@ -14,7 +14,7 @@ export default class MyPlugin extends Plugin {
 
   format(cm: CodeMirror.Editor): void {
     const cursor = cm.getCursor();
-    cm.setValue(spacing(cm.getValue()));
+    cm.setValue(spacing(cm.getValue().trim()));
     cm.setCursor(cursor);
   }
 

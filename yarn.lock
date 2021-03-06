@@ -66,6 +66,11 @@
   resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-14.14.31.tgz?cache=0&sync_timestamp=1613758409994&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fnode%2Fdownload%2F%40types%2Fnode-14.14.31.tgz#72286bd33d137aa0d152d47ec7c1762563d34055"
   integrity sha1-cihr0z0TeqDRUtR+x8F2JWPTQFU=
 
+"@types/pangu@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.npm.taobao.org/@types/pangu/download/@types/pangu-3.3.0.tgz#dceeaabd0ba64e1721b3ccd6b950ef6b7ecff3ef"
+  integrity sha1-3O6qvQumThchs8zWuVDva37P8+8=
+
 "@types/resolve@1.17.1":
   version "1.17.1"
   resolved "https://registry.npm.taobao.org/@types/resolve/download/@types/resolve-1.17.1.tgz?cache=0&sync_timestamp=1613671200787&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fresolve%2Fdownload%2F%40types%2Fresolve-1.17.1.tgz#3afd6ad8967c77e4376c598a82ddd58f46ec45d6"
