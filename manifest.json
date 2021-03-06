@@ -1,10 +1,10 @@
 {
-	"id": "obsidian-sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-pangu-plugin",
+	"name": "盘古",
 	"version": "1.0.1",
 	"minAppVersion": "0.9.12",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md/about",
+	"description": "自动为中英文之间插入空格，排版强迫者的福音。",
+	"author": "Natumsol",
+	"authorUrl": "https://github.com/natumsol",
 	"isDesktopOnly": false
 }
