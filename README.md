@@ -1,20 +1,22 @@
 ## Obsidian Pangu Plugin
 
-A small plugin aims to add space between Chinese Characters and English Alphabet, powered by [pangu.js](https://github.com/vinta/pangu.js).
-
-For Example:
+A small plugin aims to add space between Chinese Characters and English Alphabet, For Example:
 
 ```diff
 - 大多数人在20到30岁就已经过完自己的一生；一过了这个年龄段，他们就变成自己的影子。
 + 大多数人在 20 到 30 岁就已经过完自己的一生；一过了这个年龄段，他们就变成自己的影子。  
 ```
-### How to use
+## Manual installation
+Download zip archive from [GitHub releases page](https://github.com/natumsol/obsidian-pangu/releases).
+Extract the archive into `<vault>/.obsidian/plugins`.
 
-- Clone this repo.
-- `npm i` or `yarn` to install dependencies
-- `npm run dev` to start compilation in watch mode.
+Alternatively, using bash:
+```bash
+OBSIDIAN_VAULT_DIR=/path/to/your/obsidian/vault
+mkdir -p $OBSIDIAN_VAULT_DIR/.obsidian/plugins
+unzip ~/Downloads/obsidian-pangu_v1.1.0.zip -d $OBSIDIAN_VAULT_DIR/.obsidian/plugins
+```
 
-### Manually installing the plugin
+### Thanks
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
+Thanks to [pangu.vim](https://github.com/hotoo/pangu.vim), [writing4cn](https://marketplace.visualstudio.com/items?itemName=twocucao.writing4cn) and [pangu-markdown-vscode ](https://github.com/zhuyuanxiang/pangu-markdown-vscode)
