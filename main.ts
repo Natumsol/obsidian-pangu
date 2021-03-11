@@ -16,7 +16,7 @@ export default class MyPlugin extends Plugin {
     const cursor = cm.getCursor();
     let content = cm.getValue().trim();
 
-    content = content + "\n\n";
+    content = content + '\n\n';
 
     // 替换所有的全角数字为半角数字
     content = formatUtil.replaceFullNumbers(content);
@@ -28,25 +28,28 @@ export default class MyPlugin extends Plugin {
     content = formatUtil.condenseContent(content);
 
     // 每行操作
-    content = content.split("\n").map((line) => {
-      // 中文内部使用全角标点
-      line = formatUtil.replacePunctuations(line);
+    content = content
+      .split('\n')
+      .map((line: string) => {
+        // 中文内部使用全角标点
+        // line = formatUtil.replacePunctuations(line);
 
-      // 删除多余的空格
-      line = formatUtil.deleteSpaces(line);
+        // 删除多余的空格
+        line = formatUtil.deleteSpaces(line);
 
-      // 插入必要的空格
-      line = formatUtil.insertSpace(line);
+        // 插入必要的空格
+        line = formatUtil.insertSpace(line);
 
-      // 将有编号列表的“1. ”改成 “1.  ”
-      line = line.replace(/^(\s*)(\d\.)\s+(\S)/, '$1$2  $3');
+        // 将有编号列表的“1. ”改成 “1.  ”
+        line = line.replace(/^(\s*)(\d\.)\s+(\S)/, '$1$2  $3');
 
-      // 将无编号列表的“* ”改成 “-   ”
-      // 将无编号列表的“- ”改成 “-   ”
-      line = line.replace(/^(\s*)[-\*]\s+(\S)/, '$1-   $2');
+        // 将无编号列表的“* ”改成 “-   ”
+        // 将无编号列表的“- ”改成 “-   ”
+        line = line.replace(/^(\s*)[-\*]\s+(\S)/, '$1-   $2');
 
-      return line;
-    }).join("\n");
+        return line;
+      })
+      .join('\n');
 
     // 结束文档整理前再删除最后一个回车
     content = content.replace(/(\n){2,}$/g, '$1');
@@ -55,7 +58,6 @@ export default class MyPlugin extends Plugin {
     cm.setValue(content);
     cm.setCursor(cursor);
   }
-
 
   async onload() {
     await this.loadSettings();
@@ -71,7 +73,7 @@ export default class MyPlugin extends Plugin {
       },
     });
 
-    this.registerCodeMirror(cm => {
+    this.registerCodeMirror((cm: { addKeyMap: (arg0: { 'Ctrl-S': (cm: any) => void, 'Cmd-S': (cm: any) => void }) => any }) => {
       this.settings.autoSpacing &&
         cm.addKeyMap({
           'Ctrl-S': this.format,
@@ -107,9 +109,9 @@ class SampleSettingTab extends PluginSettingTab {
     let { containerEl } = this;
     containerEl.empty();
 
-    new Setting(containerEl).setName('自动格式化').addToggle(toggle => {
+    new Setting(containerEl).setName('自动格式化').addToggle((toggle: { setValue: (arg0: boolean) => void, onChange: (arg0: (value: any) => Promise<void>) => void }) => {
       toggle.setValue(this.plugin.settings.autoSpacing);
-      toggle.onChange(async value => {
+      toggle.onChange(async (value: boolean) => {
         this.plugin.settings.autoSpacing = value;
         await this.plugin.saveSettings();
         new Notice('按 CMD + R 或 F5 重新载入后生效。');
