@@ -15,6 +15,7 @@ export default class MyPlugin extends Plugin {
   format(cm: CodeMirror.Editor): void {
     let cursor = cm.getCursor();
     let cursorContent = cm.getRange({ ...cursor, ch: 0 }, cursor);
+    const { top } = cm.getScrollInfo();
 
     cursorContent = formatUtil.formatContent(cursorContent);
 
@@ -24,8 +25,11 @@ export default class MyPlugin extends Plugin {
 
     cm.setValue(content);
 
+    cm.scrollTo(null, top);
+
     // 保持光标格式化后不变
     const newDocLine = cm.getLine(cursor.line);
+    console.log(cm.getScrollInfo());
     try {
       cursor = { ...cursor, ch: newDocLine.indexOf(cursorContent) + cursorContent.length };
     } catch (error) {}
@@ -47,11 +51,13 @@ export default class MyPlugin extends Plugin {
       },
     });
 
-    this.registerCodeMirror((cm: { addKeyMap: (arg0: { 'Ctrl-S': (cm: any) => void, 'Cmd-S': (cm: any) => void }) => any }) => {
+    this.registerCodeMirror((cm: { addKeyMap: (arg0: { 'Shift-Ctrl-S': (cm: any) => void, 'Shift-Cmd-S': (cm: any) => void }) => any }) => {
+      console.log(cm);
+
       this.settings.autoSpacing &&
         cm.addKeyMap({
-          'Ctrl-S': this.format,
-          'Cmd-S': this.format,
+          'Shift-Ctrl-S': this.format,
+          'Shift-Cmd-S': this.format,
         });
     });
 
@@ -83,13 +89,16 @@ class SampleSettingTab extends PluginSettingTab {
     let { containerEl } = this;
     containerEl.empty();
 
-    new Setting(containerEl).setName('自动格式化').addToggle((toggle: { setValue: (arg0: boolean) => void, onChange: (arg0: (value: any) => Promise<void>) => void }) => {
-      toggle.setValue(this.plugin.settings.autoSpacing);
-      toggle.onChange(async (value: boolean) => {
-        this.plugin.settings.autoSpacing = value;
-        await this.plugin.saveSettings();
-        new Notice('按 CMD + R 或 F5 重新载入后生效。');
+    new Setting(containerEl)
+      .setName('开启快捷键')
+      .setDesc('Mac: Command + Shift + S，Windows: Shift + Ctrl + S')
+      .addToggle((toggle: { setValue: (arg0: boolean) => void, onChange: (arg0: (value: any) => Promise<void>) => void }) => {
+        toggle.setValue(this.plugin.settings.autoSpacing);
+        toggle.onChange(async (value: boolean) => {
+          this.plugin.settings.autoSpacing = value;
+          await this.plugin.saveSettings();
+          new Notice('按 Command + R 或 F5 重新载入后生效。');
+        });
       });
-    });
   }
 }
