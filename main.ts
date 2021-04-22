@@ -29,7 +29,6 @@ export default class MyPlugin extends Plugin {
 
     // 保持光标格式化后不变
     const newDocLine = cm.getLine(cursor.line);
-    console.log(cm.getScrollInfo());
     try {
       cursor = { ...cursor, ch: newDocLine.indexOf(cursorContent) + cursorContent.length };
     } catch (error) {}
@@ -52,8 +51,6 @@ export default class MyPlugin extends Plugin {
     });
 
     this.registerCodeMirror((cm: { addKeyMap: (arg0: { 'Shift-Ctrl-S': (cm: any) => void, 'Shift-Cmd-S': (cm: any) => void }) => any }) => {
-      console.log(cm);
-
       this.settings.autoSpacing &&
         cm.addKeyMap({
           'Shift-Ctrl-S': this.format,
