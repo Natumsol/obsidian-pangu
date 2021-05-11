@@ -1,6 +1,6 @@
 {
   "name": "obsidian-pangu",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "A small plugin aims to add space between Chinese Characters and English Alphabet, and it is a boon for typographically compulsive people. ",
   "main": "main.js",
   "scripts": {

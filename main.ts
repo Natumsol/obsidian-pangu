@@ -1,17 +1,7 @@
 import { App, Modal, Notice, Plugin, PluginSettingTab, Setting, MarkdownView } from 'obsidian';
 import formatUtil from './formatUtil';
 
-interface MyPluginSettings {
-  autoSpacing: boolean;
-}
-
-const DEFAULT_SETTINGS: MyPluginSettings = {
-  autoSpacing: true,
-};
-
-export default class MyPlugin extends Plugin {
-  settings: MyPluginSettings;
-
+export default class Pangu extends Plugin {
   format(cm: CodeMirror.Editor): void {
     let cursor = cm.getCursor();
     let cursorContent = cm.getRange({ ...cursor, ch: 0 }, cursor);
@@ -37,8 +27,6 @@ export default class MyPlugin extends Plugin {
   }
 
   async onload() {
-    await this.loadSettings();
-
     this.addCommand({
       id: 'pangu-format',
       name: '为中英文字符间自动加入空格',
@@ -48,36 +36,32 @@ export default class MyPlugin extends Plugin {
           this.format(activeLeafView.sourceMode.cmEditor);
         }
       },
+      hotkeys: [
+        {
+          modifiers: ['Mod', 'Shift'],
+          key: 's',
+        },
+        {
+          modifiers: ['Ctrl', 'Shift'],
+          key: 's',
+        },
+      ],
     });
 
-    this.registerCodeMirror((cm: { addKeyMap: (arg0: { 'Shift-Ctrl-S': (cm: any) => void, 'Shift-Cmd-S': (cm: any) => void }) => any }) => {
-      this.settings.autoSpacing &&
-        cm.addKeyMap({
-          'Shift-Ctrl-S': this.format,
-          'Shift-Cmd-S': this.format,
-        });
-    });
-
-    this.addSettingTab(new SampleSettingTab(this.app, this));
+    this.addSettingTab(new PanguSettingTab(this.app, this));
   }
 
   onunload() {
     console.log('unloading plugin');
   }
 
-  async loadSettings() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-  }
-
-  async saveSettings() {
-    await this.saveData(this.settings);
-  }
+  async loadSettings() {}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-  plugin: MyPlugin;
+class PanguSettingTab extends PluginSettingTab {
+  plugin: Pangu;
 
-  constructor(app: App, plugin: MyPlugin) {
+  constructor(app: App, plugin: Pangu) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -85,17 +69,7 @@ class SampleSettingTab extends PluginSettingTab {
   display(): void {
     let { containerEl } = this;
     containerEl.empty();
-
-    new Setting(containerEl)
-      .setName('开启快捷键')
-      .setDesc('Mac: Command + Shift + S，Windows: Shift + Ctrl + S')
-      .addToggle((toggle: { setValue: (arg0: boolean) => void, onChange: (arg0: (value: any) => Promise<void>) => void }) => {
-        toggle.setValue(this.plugin.settings.autoSpacing);
-        toggle.onChange(async (value: boolean) => {
-          this.plugin.settings.autoSpacing = value;
-          await this.plugin.saveSettings();
-          new Notice('按 Command + R 或 F5 重新载入后生效。');
-        });
-      });
+    containerEl.createEl('h2', { text: 'Pangu 使用说明' });
+    new Setting(containerEl).setName('').setDesc('默认快捷键为:Mac - Command + Shift + S，Windows -  Shift + Ctrl + S。当然，您可以到「设置 - 快捷键」里进行更改。');
   }
 }
