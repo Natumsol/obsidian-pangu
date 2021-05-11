@@ -31,8 +31,8 @@ export default class Pangu extends Plugin {
       id: 'pangu-format',
       name: '为中英文字符间自动加入空格',
       callback: () => {
-        const activeLeafView = this.app.workspace.activeLeaf.view;
-        if (activeLeafView instanceof MarkdownView) {
+        const activeLeafView = this.app.workspace.getActiveViewOfType(MarkdownView);
+        if (activeLeafView) {
           this.format(activeLeafView.sourceMode.cmEditor);
         }
       },
