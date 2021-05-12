@@ -133,84 +133,16 @@ export default {
     return content;
   },
 
-  replaceFullNumbers(content: string): string {
-    ' 全角数字。';
-    content = content.replace(/０/g, '0');
-    content = content.replace(/１/g, '1');
-    content = content.replace(/２/g, '2');
-    content = content.replace(/３/g, '3');
-    content = content.replace(/４/g, '4');
-    content = content.replace(/５/g, '5');
-    content = content.replace(/６/g, '6');
-    content = content.replace(/７/g, '7');
-    content = content.replace(/８/g, '8');
-    content = content.replace(/９/g, '9');
-    return content;
-  },
-
-  replaceFullChars(content: string): string {
-    ' 全角英文和标点。';
-    content = content.replace(/Ａ/g, 'A');
-    content = content.replace(/Ｂ/g, 'B');
-    content = content.replace(/Ｃ/g, 'C');
-    content = content.replace(/Ｄ/g, 'D');
-    content = content.replace(/Ｅ/g, 'E');
-    content = content.replace(/Ｆ/g, 'F');
-    content = content.replace(/Ｇ/g, 'G');
-    content = content.replace(/Ｈ/g, 'H');
-    content = content.replace(/Ｉ/g, 'I');
-    content = content.replace(/Ｊ/g, 'J');
-    content = content.replace(/Ｋ/g, 'K');
-    content = content.replace(/Ｌ/g, 'L');
-    content = content.replace(/Ｍ/g, 'M');
-    content = content.replace(/Ｎ/g, 'N');
-    content = content.replace(/Ｏ/g, 'O');
-    content = content.replace(/Ｐ/g, 'P');
-    content = content.replace(/Ｑ/g, 'Q');
-    content = content.replace(/Ｒ/g, 'R');
-    content = content.replace(/Ｓ/g, 'S');
-    content = content.replace(/Ｔ/g, 'T');
-    content = content.replace(/Ｕ/g, 'U');
-    content = content.replace(/Ｖ/g, 'V');
-    content = content.replace(/Ｗ/g, 'W');
-    content = content.replace(/Ｘ/g, 'X');
-    content = content.replace(/Ｙ/g, 'Y');
-    content = content.replace(/Ｚ/g, 'Z');
-    content = content.replace(/ａ/g, 'a');
-    content = content.replace(/ｂ/g, 'b');
-    content = content.replace(/ｃ/g, 'c');
-    content = content.replace(/ｄ/g, 'd');
-    content = content.replace(/ｅ/g, 'e');
-    content = content.replace(/ｆ/g, 'f');
-    content = content.replace(/ｇ/g, 'g');
-    content = content.replace(/ｈ/g, 'h');
-    content = content.replace(/ｉ/g, 'i');
-    content = content.replace(/ｊ/g, 'j');
-    content = content.replace(/ｋ/g, 'k');
-    content = content.replace(/ｌ/g, 'l');
-    content = content.replace(/ｍ/g, 'm');
-    content = content.replace(/ｎ/g, 'n');
-    content = content.replace(/ｏ/g, 'o');
-    content = content.replace(/ｐ/g, 'p');
-    content = content.replace(/ｑ/g, 'q');
-    content = content.replace(/ｒ/g, 'r');
-    content = content.replace(/ｓ/g, 's');
-    content = content.replace(/ｔ/g, 't');
-    content = content.replace(/ｕ/g, 'u');
-    content = content.replace(/ｖ/g, 'v');
-    content = content.replace(/ｗ/g, 'w');
-    content = content.replace(/ｘ/g, 'x');
-    content = content.replace(/ｙ/g, 'y');
-    content = content.replace(/ｚ/g, 'z');
-    return content;
+  replaceFullNumbersAndChars(content: string): string {
+    // 替换全角数字 & 全角英文
+    // Ａ -> A
+    // ０ -> 0
+    return content.replace(/[\uFF10-\uFF19\uFF21-\uFF5A]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xfee0));
   },
 
   formatContent(content: string): string {
-    // 替换所有的全角数字为半角数字
-    content = this.replaceFullNumbers(content);
-
-    // 替换所有的全角英文和@标点 为 半角的英文和@标点
-    content = this.replaceFullChars(content);
+    // 替换所有的全角数字和字母为半角
+    content = this.replaceFullNumbersAndChars(content);
 
     // 删除多余的内容（回车）
     content = this.condenseContent(content);
