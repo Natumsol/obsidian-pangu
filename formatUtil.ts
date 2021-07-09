@@ -1,3 +1,8 @@
+
+interface IgnoreBlock {
+  start: number | null,
+  end: number | null
+}
 export default {
   condenseContent(content: string): string {
     // 将 制表符 改成 四个空格
@@ -8,6 +13,25 @@ export default {
     content = content.replace(/(\n){3,}/g, '$1$1');
     content = content.replace(/(\r\n){3,}/g, '$1$1');
     return content;
+  },
+  getIgnoreBlocks(lines: string[], token: string = '```'): IgnoreBlock[] {
+    const ignoreBlocks: IgnoreBlock[] = [];
+    let block: IgnoreBlock | null = null;
+    lines.forEach((line, index) => {
+      line = line.trim();
+      if (line.startsWith(token)) {
+        if (!block) {
+          block = { start: index, end: null };
+        } else {
+          if (line === token) {
+            block.end = index
+            ignoreBlocks.push(block);
+            block = null;
+          }
+        }
+      }
+    });
+    return ignoreBlocks;
   },
   deleteSpaces(content: string): string {
     // 去掉「`()[]{}<>'"`」: 前后多余的空格
@@ -141,18 +165,31 @@ export default {
   },
 
   formatContent(content: string): string {
+
+
     // 替换所有的全角数字和字母为半角
     content = this.replaceFullNumbersAndChars(content);
+
 
     // 删除多余的内容（回车）
     content = this.condenseContent(content);
 
+
     // 每行操作
-    content = content
-      .split('\n')
-      .map((line: string) => {
-        // 中文内部使用全角标点
-        // line = formatUtil.replacePunctuations(line);
+    const lines = content
+      .split('\n');
+
+    const ignoreBlocks: IgnoreBlock[] = this.getIgnoreBlocks(lines);
+
+    content = lines
+      .map((line: string, index: number) => {
+
+        // 忽略代码块
+        if (ignoreBlocks.some(({ start, end }) => {
+          return index >= start && index <= end;
+        })) {
+          return line;
+        }
 
         // 删除多余的空格
         line = this.deleteSpaces(line);
