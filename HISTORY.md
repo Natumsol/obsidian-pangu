@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0](https://github.com/Natumsol/obsidian-pangu-plugin/compare/1.2.10...1.3.0)
+## [1.3.0](https://github.com/Natumsol/obsidian-pangu-plugin/compare/1.3.0...1.3.0)
+
+## [1.3.0](https://github.com/Natumsol/obsidian-pangu-plugin/compare/1.2.10...1.3.0) - 2021-07-09
+
+### Commits
+
+- feat: ignore code block [`637ca7c`](https://github.com/Natumsol/obsidian-pangu-plugin/commit/637ca7c45f2488f36673587afebfc537fa831dd6)
+- chore: 1.3.0 [`55cc162`](https://github.com/Natumsol/obsidian-pangu-plugin/commit/55cc162f0453eee71102dc56f176cf6239898313)
 
 ## [1.2.10](https://github.com/Natumsol/obsidian-pangu-plugin/compare/1.2.9...1.2.10) - 2021-06-16
 

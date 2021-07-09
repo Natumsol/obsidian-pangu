@@ -5,8 +5,12 @@ async function pub(version) {
   await $`npm run version`;
   await $`git add --all`;
   await $`git commit -m "chore: ${version}"`;
+
+  // 打标签前先删除
+  await $`git tag --delete ${version}`;
+
   await $`git tag -a ${version} -m "version ${version}"`;
-  // await $`git push --follow-tags`;
+  await $`git push --follow-tags`;
 }
 
 async function getVersion(type) {
