@@ -5,11 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.3](https://github.com/Natumsol/obsidian-pangu/compare/1.3.2...1.3.3)
+## [1.3.4](https://github.com/Natumsol/obsidian-pangu/compare/1.3.3...1.3.4)
+
+### Commits
+
+- fix: fix: ignore link #11 [`42e91ef`](https://github.com/Natumsol/obsidian-pangu/commit/42e91eff27bca978994c4fcb39ae655c658647ea)
+
+## [1.3.3](https://github.com/Natumsol/obsidian-pangu/compare/1.3.2...1.3.3) - 2021-11-28
 
 ### Commits
 
 - fix: fix: ignore link #11 [`5762158`](https://github.com/Natumsol/obsidian-pangu/commit/57621586441f746fce32e1cc7e73383574ceaf70)
+- chore: 1.3.3 [`433df72`](https://github.com/Natumsol/obsidian-pangu/commit/433df72c61cd3af15b313ef285aa20749591dd97)
 
 ## [1.3.2](https://github.com/Natumsol/obsidian-pangu/compare/1.3.1...1.3.2) - 2021-11-28
 
