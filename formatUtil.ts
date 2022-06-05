@@ -107,7 +107,7 @@ export default {
     // 在 “中文English” 之间加入空格 “中文 English”
     // 在 “中文123” 之间加入空格 “中文 123”
     content = content.replace(
-      /(?<!\[.*\]\(.*)([\u4e00-\u9fa5\u3040-\u30FF])([a-zA-Z0-9`])/g,
+      /(?<!(?:\[.*\]\(.*)|(?:!?\[\[.*))([\u4e00-\u9fa5\u3040-\u30FF])([a-zA-Z0-9`])/g,
       '$1 $2'
     );
 
@@ -115,7 +115,7 @@ export default {
     // 在 “123中文” 之间加入空格 “123 中文”
     content = content.replace(
       /(?<!\[.*\]\(.*)([a-zA-Z0-9%`])([*]*[\u4e00-\u9fa5\u3040-\u30FF])/g,
-      '$1 $2'
+      "$1 $2"
     );
 
     // 在 「I said:it's a good news」的冒号与英文之间加入空格 「I said: it's a good news」
