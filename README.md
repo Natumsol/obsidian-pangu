@@ -4,13 +4,16 @@ A small plugin aims to add space between Chinese Characters and English Alphabet
 
 ```diff
 - 大多数人在20到30岁就已经过完自己的一生；一过了这个年龄段，他们就变成自己的影子。
-+ 大多数人在 20 到 30 岁就已经过完自己的一生；一过了这个年龄段，他们就变成自己的影子。  
++ 大多数人在 20 到 30 岁就已经过完自己的一生；一过了这个年龄段，他们就变成自己的影子。
 ```
+
 ## Manual installation
+
 Download zip archive from [GitHub releases page](https://github.com/natumsol/obsidian-pangu/releases).
 Extract the archive into `<vault>/.obsidian/plugins`.
 
 Alternatively, using bash:
+
 ```bash
 OBSIDIAN_VAULT_DIR=/path/to/your/obsidian/vault
 mkdir -p $OBSIDIAN_VAULT_DIR/.obsidian/plugins
