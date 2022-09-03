@@ -1,7 +1,10 @@
+import Scanner from './model/Scanner';
+
 interface IgnoreBlock {
   start: number | null;
   end: number | null;
 }
+
 export default {
   condenseContent(content: string): string {
     // 将 制表符 改成 四个空格
@@ -104,24 +107,41 @@ export default {
   },
 
   insertSpace(content: string): string {
-    // 在 “中文English” 之间加入空格 “中文 English”
-    // 在 “中文123” 之间加入空格 “中文 123”
-    content = content.replace(
-      /(?<!\[.*\]\(.*)([\u4e00-\u9fa5\u3040-\u30FF])([a-zA-Z0-9`])/g,
-      '$1 $2'
-    );
+    const interMiddle = (open: string, close: string, groups: string[]) => {
+      return  open + ' ' + groups.filter(group => group != undefined).join(' ')
+    }
+    const rules = [
+      {
+        type: 'link',
+        open: /\]\(/,
+        close: /\)/
+      },
+      {
+        type: 'duplex-link',
+        open: /!?\[\[/,
+        close: /\]\]/
+      },
+      {
+        open: /[\u4e00-\u9fa5\u3040-\u30FF]+/,
+        close: /^(?:!?\[)?([a-zA-Z0-9]+)([\u4e00-\u9fa5\u3040-\u30FF]*)?/g,
+        deal: interMiddle
+      },
+      {
+        open: /[a-zA-Z0-9`]+/,
+        close: /^(?:!?\[)?([\u4e00-\u9fa5\u3040-\u30FF]+)([a-zA-Z0-9]*)?/g,
+        deal: interMiddle
+      },
+      {
+        open: /:\s*/,
+        close: /^[a-zA-z]/,
+        deal(_: string, close: string) {
+          return `: ${close}`
+        }
+      },
+    ]
+    const scanner = new Scanner(content, rules)
 
-    // 在 “English中文” 之间加入空格 “English 中文”
-    // 在 “123中文” 之间加入空格 “123 中文”
-    content = content.replace(
-      /(?<!\[.*\]\(.*)([a-zA-Z0-9%`])([*]*[\u4e00-\u9fa5\u3040-\u30FF])/g,
-      '$1 $2'
-    );
-
-    // 在 「I said:it's a good news」的冒号与英文之间加入空格 「I said: it's a good news」
-    content = content.replace(/([:])\s*([a-zA-z])/g, '$1 $2');
-
-    return content;
+    return scanner.deal()
   },
   replacePunctuations(content: string): string {
     // `, \ . : ; ? !` 改成 `，、。：；？！`
