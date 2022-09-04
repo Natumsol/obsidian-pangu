@@ -37,6 +37,7 @@ describe('insertSpace test', () => {
 
     expect(insertSpace('好棒![[本地文件wgd文件]]')).toEqual('好棒![[本地文件wgd文件]]');
     expect(insertSpace('nice![[wgd文件]]')).toEqual('nice![[wgd文件]]');
+    expect(insertSpace('`sf::发:ff`')).toEqual('`sf::发:ff`');
   });
 
   test('综合测试', () => {

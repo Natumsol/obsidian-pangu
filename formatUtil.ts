@@ -122,12 +122,17 @@ export default {
         close: /\]\]/
       },
       {
+        type: 'inline-code',
+        open: /`/,
+        close: /`/
+      },
+      {
         open: /[\u4e00-\u9fa5\u3040-\u30FF]+/,
         close: /^(?:!?\[)?([a-zA-Z0-9]+)([\u4e00-\u9fa5\u3040-\u30FF]*)?/g,
         deal: interMiddle
       },
       {
-        open: /[a-zA-Z0-9`]+/,
+        open: /[a-zA-Z0-9]+/,
         close: /^(?:!?\[)?([\u4e00-\u9fa5\u3040-\u30FF]+)([a-zA-Z0-9]*)?/g,
         deal: interMiddle
       },
