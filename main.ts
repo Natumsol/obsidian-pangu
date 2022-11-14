@@ -1,5 +1,10 @@
 import { App, Plugin, PluginSettingTab, Setting, MarkdownView } from 'obsidian';
-import formatUtil from './formatUtil';
+// @ts-ignore
+import prettier from 'prettier/esm/standalone';
+// @ts-ignore
+import markdownParser from 'prettier/esm/parser-markdown';
+
+const { format } = prettier;
 
 export default class Pangu extends Plugin {
   format(cm: CodeMirror.Editor): void {
@@ -7,11 +12,18 @@ export default class Pangu extends Plugin {
     let cursorContent = cm.getRange({ ...cursor, ch: 0 }, cursor);
     const { top } = cm.getScrollInfo();
 
-    cursorContent = formatUtil.formatContent(cursorContent);
+    // cursorContent = formatUtil.formatContent(cursorContent);
+    cursorContent = format(cursorContent, {
+      parser: 'markdown',
+      plugins: [markdownParser]
+    });
 
     let content = cm.getValue().trim();
-    content = content + '\n\n';
-    content = formatUtil.formatContent(content);
+    // content = formatUtil.formatContent(content);
+    content = format(content, {
+      parser: 'markdown',
+      plugins: [markdownParser]
+    })
 
     cm.setValue(content);
 
@@ -24,7 +36,7 @@ export default class Pangu extends Plugin {
         ...cursor,
         ch: newDocLine.indexOf(cursorContent) + cursorContent.length,
       };
-    } catch (error) {}
+    } catch (error) { }
 
     cm.setCursor(cursor);
   }
@@ -60,7 +72,7 @@ export default class Pangu extends Plugin {
     console.log('unloading plugin');
   }
 
-  async loadSettings() {}
+  async loadSettings() { }
 }
 
 class PanguSettingTab extends PluginSettingTab {
