@@ -1,10 +1,5 @@
 import { App, Plugin, PluginSettingTab, Setting, MarkdownView } from 'obsidian';
-// @ts-ignore
-import prettier from 'prettier/esm/standalone';
-// @ts-ignore
-import markdownParser from 'prettier/esm/parser-markdown';
-
-const { format } = prettier;
+import { format } from './util';
 
 export default class Pangu extends Plugin {
   format(cm: CodeMirror.Editor): void {
@@ -12,21 +7,11 @@ export default class Pangu extends Plugin {
     let cursorContent = cm.getRange({ ...cursor, ch: 0 }, cursor);
     const { top } = cm.getScrollInfo();
 
-    // cursorContent = formatUtil.formatContent(cursorContent);
-    cursorContent = format(cursorContent, {
-      parser: 'markdown',
-      plugins: [markdownParser]
-    });
-
+    cursorContent = format(cursorContent);
     let content = cm.getValue().trim();
-    // content = formatUtil.formatContent(content);
-    content = format(content, {
-      parser: 'markdown',
-      plugins: [markdownParser]
-    })
+    content = format(content)
 
     cm.setValue(content);
-
     cm.scrollTo(null, top);
 
     // 保持光标格式化后不变
