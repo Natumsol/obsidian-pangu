@@ -5,10 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.1](https://github.com/Natumsol/obsidian-pangu/compare/1.4.0...1.4.1)
+## [1.5.0](https://github.com/Natumsol/obsidian-pangu/compare/1.4.1...1.5.0)
 
 ### Commits
 
+- feat(*): add command completion for eng [`2c85463`](https://github.com/Natumsol/obsidian-pangu/commit/2c85463faec387e2be1626fe68492d347641bda0)
+
+## [1.4.1](https://github.com/Natumsol/obsidian-pangu/compare/1.4.0...1.4.1) - 2022-11-14
+
+### Commits
+
+- chore: 1.4.1 [`e500bbb`](https://github.com/Natumsol/obsidian-pangu/commit/e500bbbcdabf19117cbaea63f89c8df1b84273cb)
 - build(rollup): remove sourcemap [`0f3cf84`](https://github.com/Natumsol/obsidian-pangu/commit/0f3cf8499cce6277533bfbe478ff61c899e6b4f8)
 
 ## [1.4.0](https://github.com/Natumsol/obsidian-pangu/compare/1.3.5...1.4.0) - 2022-11-14
