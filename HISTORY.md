@@ -5,11 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.5.1](https://github.com/Natumsol/obsidian-pangu/compare/1.5.0...1.5.1)
+## [1.6.0](https://github.com/Natumsol/obsidian-pangu/compare/1.5.1...1.6.0)
+
+### Commits
+
+- feat(config): add config for formatter [`468ca2c`](https://github.com/Natumsol/obsidian-pangu/commit/468ca2c153cf48d0059e13989a3b52f5dc6b7379)
+
+## [1.5.1](https://github.com/Natumsol/obsidian-pangu/compare/1.5.0...1.5.1) - 2022-11-15
 
 ### Commits
 
 - refactor(*): remove redundant code [`0644655`](https://github.com/Natumsol/obsidian-pangu/commit/06446553a8e43338f7f2d29fdada9c5a55f596c7)
+- chore: 1.5.1 [`358b11e`](https://github.com/Natumsol/obsidian-pangu/commit/358b11e517dbfff51115509cfb7caa8021a5215a)
 
 ## [1.5.0](https://github.com/Natumsol/obsidian-pangu/compare/1.4.1...1.5.0) - 2022-11-15
 
