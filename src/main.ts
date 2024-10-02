@@ -11,7 +11,7 @@ export default class Pangu extends Plugin {
 
     cursorContent = format(cursorContent);
     let content = cm.getValue().trim();
-    content = format(content);
+    content = format(content, this.settings);
 
     cm.setValue(content);
     cm.scrollTo(null, top);
@@ -51,7 +51,7 @@ export default class Pangu extends Plugin {
         },
       ],
     });
-
+    await this.loadSettings();
     this.addSettingTab(new PanguSettingTab(this.app, this));
   }
 
