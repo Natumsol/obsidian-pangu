@@ -5,11 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.1](https://github.com/Natumsol/obsidian-pangu/compare/1.6.0...1.6.1)
+## [1.6.2](https://github.com/Natumsol/obsidian-pangu/compare/1.6.1...1.6.2)
+
+### Merged
+
+- fix: plugin settings not saved [`#42`](https://github.com/Natumsol/obsidian-pangu/pull/42)
+
+## [1.6.1](https://github.com/Natumsol/obsidian-pangu/compare/1.6.0...1.6.1) - 2022-11-17
 
 ### Commits
 
 - build(ci): fix ci [`9dbe98f`](https://github.com/Natumsol/obsidian-pangu/commit/9dbe98f4a5a4727ac77ceee762d618bf931bf181)
+- chore: 1.6.1 [`92f13d2`](https://github.com/Natumsol/obsidian-pangu/commit/92f13d2f88b71592a17e9cbbe79bb28b85a210bc)
 
 ## [1.6.0](https://github.com/Natumsol/obsidian-pangu/compare/1.5.1...1.6.0) - 2022-11-17
 
