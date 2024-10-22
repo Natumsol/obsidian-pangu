@@ -9,7 +9,7 @@ export default class Pangu extends Plugin {
     let cursorContent = cm.getRange({ ...cursor, ch: 0 }, cursor);
     const { top } = cm.getScrollInfo();
 
-    cursorContent = format(cursorContent);
+    cursorContent = format(cursorContent,this.settings);
     let content = cm.getValue().trim();
     content = format(content, this.settings);
 
