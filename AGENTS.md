@@ -38,7 +38,7 @@ Obsidian Pangu 为 Markdown 正文补充中英文间距，同时保护笔记语�
 ## Release
 
 - 展示名称使用官方登记的 `PanGu`，插件 ID 保持 `obsidian-pangu`；不得为改名新建插件 ID。
-- 从 1.7.1 起 `minAppVersion` 为 `0.12.16`；最低版本必须覆盖实际 API 及目录检查要求，更新时保留旧版设置页兼容路径。
+- 从 1.7.2 起 `minAppVersion` 为 `0.12.16`；最低版本必须覆盖实际 API 及目录检查要求，更新时保留旧版设置页兼容路径。
 - `package.json` 声明 MIT，根目录必须保留完整 `LICENSE`；插件描述以英文句末标点结尾。
 - Obsidian API 开发依赖固定到不可变版本，不使用 `master` 压缩包；更新依赖后重新生成 `yarn.lock` 并验证冻结安装，不跳过完整性校验。
 - 发布前同步 `package.json`、`manifest.json` 和 `HISTORY.md`；标签使用不带 `v` 的版本号。

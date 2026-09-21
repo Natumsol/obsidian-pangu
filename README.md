@@ -49,7 +49,7 @@ compatibility rule, `npm test` for regression tests, and `npm run build` to
 generate the plugin in `dist/`. This lint command checks API compatibility only,
 not every community-directory rule.
 
-PanGu 1.7.1 requires Obsidian 0.12.16 or later. The declared minimum covers the
+PanGu 1.7.2 requires Obsidian 0.12.16 or later. The declared minimum covers the
 directory check's API requirements; declarative settings still activate only
 on Obsidian 1.13 and later.
 

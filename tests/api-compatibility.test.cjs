@@ -1,6 +1,7 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
+const { spawnSync } = require("node:child_process");
 const { ESLint } = require("eslint");
 
 const cwd = path.join(__dirname, "..");
@@ -25,14 +26,36 @@ test("declared minimum Obsidian version passes the official API rule", async () 
   );
 });
 
-test("official API check rejects the previously advertised 0.9.12 minimum", async () => {
-  const results = await new ESLint({
-    cwd,
-    overrideConfig: {
-      rules: { [rule]: ["error", { minAppVersion: "0.9.12" }] },
-    },
-  }).lintFiles(["src/main.ts"]);
-  const messages = results.flatMap((result) => result.messages);
+test("official API check rejects the previously advertised 0.9.12 minimum", () => {
+  // In CI, typescript-eslint treats a second parse in the same process as an
+  // autofix and uses an isolated Program without dependency declarations.
+  // A fresh CLI process keeps this negative control fully type-aware.
+  const eslintBin = path.join(
+    path.dirname(require.resolve("eslint/package.json")),
+    "bin",
+    "eslint.js"
+  );
+  const result = spawnSync(
+    process.execPath,
+    [
+      eslintBin,
+      "src/main.ts",
+      "--format",
+      "json",
+      "--rule",
+      JSON.stringify({ [rule]: ["error", { minAppVersion: "0.9.12" }] }),
+    ],
+    {
+      cwd,
+      encoding: "utf8",
+      timeout: 60000,
+    }
+  );
+  assert.ifError(result.error);
+  assert.equal(result.status, 1, result.stderr || result.stdout);
+  const messages = JSON.parse(result.stdout).flatMap(
+    (result) => result.messages
+  );
   assert.ok(messages.length > 0, "negative control must not silently pass");
   assert.ok(messages.every((message) => message.ruleId === rule));
   assert.ok(
