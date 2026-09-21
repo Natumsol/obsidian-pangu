@@ -1,0 +1,65 @@
+AGENTS.md
+  45a964fa3eba07a9 41
+manifest.json
+  45a964fa3eba07a9 4
+tests/api-compatibility.test.cjs
+  45a964fa3eba07a9 4,29-58
+package.json
+  45a964fa3eba07a9 3
+README.md
+  45a964fa3eba07a9 52
+HISTORY.md
+  45a964fa3eba07a9 8-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "4f7d3e4aa515bd8103075cb8614b241b9c26b3ca",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 57,
+      "total_deletions": 22,
+      "accepted_lines": 48,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "manifest.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "README.md": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "HISTORY.md": {
+          "additions": 13,
+          "deletions": 1,
+          "accepted_lines": 13
+        },
+        "AGENTS.md": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "package.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "tests/api-compatibility.test.cjs": {
+          "additions": 40,
+          "deletions": 17,
+          "accepted_lines": 31
+        }
+      }
+    }
+  }
+}
