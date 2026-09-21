@@ -14,13 +14,19 @@ function unfinishedMarkup(text: string, end: number): boolean {
     .replace(/\$[^$]*\$/g, "")
     .replace(/\[[^\]]*\]\([^)]*\)/g, "")
     .replace(/\\./g, "");
-  if (/[`$\[<]/.test(line)) return true;
-  // Track multiline delimiters in order so dollars in closed code do not
-  // disable automatic spacing in the prose that follows it.
+  if (/[`$<]/.test(line)) return true;
+  // Pair delimiters across lines instead of treating every '[' as unfinished:
+  // task markers are balanced, while incomplete link/image labels are not.
+  // Code and math contents must not affect the surrounding markup state.
   let backticks = 0;
   let math = 0;
   let fence = "";
-  const tokens = /\\[\s\S]|`+|~{3,}|\$+/g;
+  let brackets = 0;
+  let labelEnd = -2;
+  let destination = 0;
+  let angle = false;
+  let quote = "";
+  const tokens = /\\[\s\S]|`+|~{3,}|\$+|[\[\]()<>'"]/g;
   let match: RegExpExecArray | null;
   while ((match = tokens.exec(prefix)) !== null) {
     const run = match[0];
@@ -46,12 +52,37 @@ function unfinishedMarkup(text: string, end: number): boolean {
       if (run[0] === "$" && run.length === math) math = 0;
       continue;
     }
+    if (angle) {
+      if (quote) {
+        if (run === quote) quote = "";
+      } else if (run === '"' || run === "'") quote = run;
+      else if (run === ">") angle = false;
+      continue;
+    }
+    if (destination) {
+      if (run === "(") destination++;
+      else if (run === ")") destination--;
+      continue;
+    }
     if ((run[0] === "`" || run[0] === "~") && run.length >= 3 && atLineStart)
       fence = run;
     else if (run[0] === "`") backticks = run.length;
     else if (run[0] === "$" && run.length <= 2) math = run.length;
+    else if (run === "[") brackets++;
+    else if (run === "]" && brackets) {
+      brackets--;
+      labelEnd = match.index;
+    } else if (run === "(" && match.index === labelEnd + 1) destination = 1;
+    else if (run === "<") angle = true;
   }
-  return !!fence || backticks !== 0 || math !== 0;
+  return (
+    !!fence ||
+    backticks !== 0 ||
+    math !== 0 ||
+    brackets !== 0 ||
+    destination !== 0 ||
+    angle
+  );
 }
 
 export function automaticEdits(before: string, after: string, at: number) {

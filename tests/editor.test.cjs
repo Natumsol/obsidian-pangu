@@ -175,6 +175,71 @@ test("#32: long-note input does not format or diff the whole document", () => {
   );
 });
 
+test("#32: unfinished links, images and HTML stay protected across lines", () => {
+  for (const before of [
+    "[unfinished\n中文",
+    "[[unfinished\n中文",
+    "![unfinished\n中文",
+    "[outer [inner]\n中文",
+    "> [unfinished\n> 中文",
+    "- [ ] [unfinished\n  中文",
+    "[label](\n中文",
+    "![label](path(\n中文",
+    "<span\n中文",
+    '<span title=">\n中文',
+    "[unfinished\r\n中文",
+  ]) {
+    assert.equal(
+      automaticEdits(before, before + "a", before.length).length,
+      0,
+      before
+    );
+  }
+});
+
+test("#32: completed task markers allow automatic spacing in either direction", () => {
+  for (const prefix of [
+    "- [ ] ",
+    "- [x] ",
+    "- [X] ",
+    "* [ ] ",
+    "+ [x] ",
+    "1. [ ] ",
+    "> - [ ] ",
+    "- parent\n  - [x] ",
+  ]) {
+    for (const [text, input] of [
+      ["中文", "a"],
+      ["English", "中文"],
+    ]) {
+      const before = prefix + text;
+      const editor = makeEditor(before + input);
+      applyEdits(editor, automaticEdits(before, editor.value, before.length));
+      assert.equal(editor.value, before + " " + input);
+    }
+  }
+});
+
+test("#32: balanced or escaped markers do not suppress following prose", () => {
+  for (const context of [
+    "[label\ncontinued](target)\n",
+    "![image\ncontinued](target)\n",
+    "[[note]]\n",
+    "[outer [inner]]\n",
+    "\\[literal\n",
+    "\\<literal\n",
+    "`[<`\n",
+    "```text\n[<\n```\n",
+    "$[<$\n",
+    "<span\ntitle='value'></span>\n\n",
+  ]) {
+    const before = context + "中文";
+    const editor = makeEditor(before + "a");
+    applyEdits(editor, automaticEdits(before, editor.value, before.length));
+    assert.equal(editor.value, before + " a", context);
+  }
+});
+
 test("#32: dollar signs inside finished code do not suppress later prose", () => {
   for (const code of [
     "```sh\necho $HOME\n```",
@@ -214,6 +279,24 @@ function inputHarness(initial, enabled = true) {
   return { view, editor, state, emit, set, type, dispose };
 }
 const flush = () => new Promise((resolve) => setTimeout(resolve, 10));
+
+test("#32: input events respect completed tasks and unfinished multiline markup", async () => {
+  for (const [before, insert, expected] of [
+    ["- [ ] 中文", "a", "- [ ] 中文 a"],
+    ["- [x] English", "中文", "- [x] English 中文"],
+    ["![unfinished\n中文", "a", "![unfinished\n中文a"],
+    ["<span\n中文", "a", "<span\n中文a"],
+  ]) {
+    const h = inputHarness(before);
+    try {
+      h.type(before + insert);
+      await flush();
+      assert.equal(h.editor.value, expected);
+    } finally {
+      h.dispose();
+    }
+  }
+});
 
 test("#32: committed typing is undoable and obeys the live setting", async () => {
   const h = inputHarness("中文", false);

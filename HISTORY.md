@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Keep unfinished multiline link, image and HTML markers protected during automatic spacing, without treating completed task checkboxes as unfinished markup (#32).
 - Replace whole-document editor resets with local edits, preserving selection mapping and scroll position, and grouping changes into one undo transaction on supported hosts (#4).
 
 ## [1.7.3](https://github.com/Natumsol/obsidian-pangu/compare/1.7.2...1.7.3) - 2026-09-21
