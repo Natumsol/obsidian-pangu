@@ -1,0 +1,76 @@
+tests/api-compatibility.test.cjs
+  45a964fa3eba07a9 1-46
+HISTORY.md
+  45a964fa3eba07a9 8-18
+package.json
+  45a964fa3eba07a9 3,7,18-19,26-27,32-33
+.github/workflows/releases.yml
+  45a964fa3eba07a9 24
+manifest.json
+  45a964fa3eba07a9 4-5
+eslint.config.mjs
+  45a964fa3eba07a9 1-19
+README.md
+  45a964fa3eba07a9 47-54
+AGENTS.md
+  45a964fa3eba07a9 29-31,41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "5da647a21a16debddd2c3edac4820f3982605b70",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 105,
+      "total_deletions": 13,
+      "accepted_lines": 99,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "tests/api-compatibility.test.cjs": {
+          "additions": 52,
+          "deletions": 6,
+          "accepted_lines": 46
+        },
+        ".github/workflows/releases.yml": {
+          "additions": 1,
+          "accepted_lines": 1
+        },
+        "eslint.config.mjs": {
+          "additions": 19,
+          "accepted_lines": 19
+        },
+        "README.md": {
+          "additions": 8,
+          "deletions": 2,
+          "accepted_lines": 8
+        },
+        "AGENTS.md": {
+          "additions": 4,
+          "deletions": 1,
+          "accepted_lines": 4
+        },
+        "package.json": {
+          "additions": 8,
+          "deletions": 2,
+          "accepted_lines": 8
+        },
+        "manifest.json": {
+          "additions": 2,
+          "deletions": 2,
+          "accepted_lines": 2
+        },
+        "HISTORY.md": {
+          "additions": 11,
+          "accepted_lines": 11
+        }
+      }
+    }
+  }
+}
