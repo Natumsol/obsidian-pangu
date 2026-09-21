@@ -10,7 +10,7 @@ export default class Pangu extends Plugin {
     const { top } = cm.getScrollInfo();
 
     cursorContent = format(cursorContent,this.settings);
-    let content = cm.getValue().trim();
+    let content = cm.getValue();
     content = format(content, this.settings);
 
     cm.setValue(content);
@@ -88,7 +88,7 @@ class PanguSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("缩进宽度")
-      .setDesc("指定格式化时，缩进所占空格数")
+      .setDesc("指定其他内容的格式化缩进宽度；列表始终保留原有的 Tab 和空格缩进")
       .addDropdown((dropdown) => {
         dropdown
           .addOption("2", "2个空格")

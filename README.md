@@ -15,9 +15,14 @@ on one or multiple lines) are always preserved, including
 subscripts, delimiters, and whitespace within formulas. Code spans and fenced
 code blocks are not treated as math or tags.
 
-The formatter still normalizes Markdown layout, including list indentation and
-blank lines. The indentation setting is saved across restarts; choosing four
-spaces also affects spacing after list markers.
+Lists retain their original tabs, spaces, markers, numbering, and line breaks,
+including nested task lists and lists inside blockquotes. Only prose inside lists
+receives Chinese/English spacing; formulas and code remain untouched. Indented
+code blocks also keep their original indentation.
+
+Other Markdown layout can still be normalized, including blank lines outside
+lists. The indentation setting is saved across restarts and applies to other
+formatted content; it does not override existing list indentation.
 
 ## Development
 

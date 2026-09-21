@@ -101,6 +101,73 @@ test("frontmatter, escaped dollar signs, and reference destinations are preserve
   assert.equal(format(output), output);
 });
 
+for (const tabWidth of ["2", "4"]) {
+  for (const [name, input, expected] of [
+    [
+      "#43: four-space nesting",
+      "- 父项Parent\n    - 子项Child\n",
+      "- 父项 Parent\n    - 子项 Child\n",
+    ],
+    [
+      "#36: tabs and tasks",
+      "- [ ] 父项Parent\n\t- [x] 子项Child\n\t\t- [ ] 孙项Leaf\n",
+      "- [ ] 父项 Parent\n\t- [x] 子项 Child\n\t\t- [ ] 孙项 Leaf\n",
+    ],
+    [
+      "#20: reported example",
+      "- 测试\n- 测试 2\n\t- 测试 3（注意’-‘前有个 tab）\n",
+      "- 测试\n- 测试 2\n\t- 测试 3（注意’-‘前有个 tab）\n",
+    ],
+    [
+      "leading indentation and original markers",
+      "  + 中文English\n    * 子项Child\n",
+      "  + 中文 English\n    * 子项 Child\n",
+    ],
+    [
+      "ordered markers, continuation and hard break",
+      "3. 中文English  \n   续行Text\n\n   下一段Next\n4. 后项Last\n",
+      "3. 中文 English  \n   续行 Text\n\n   下一段 Next\n4. 后项 Last\n",
+    ],
+    [
+      "quoted list",
+      "> - 中文English\n> \t- 子项Child\n",
+      "> - 中文 English\n> \t- 子项 Child\n",
+    ],
+    [
+      "code indentation",
+      "\t中文English\n\t$x_1$\n",
+      "\t中文English\n\t$x_1$\n",
+    ],
+    [
+      "protected content inside lists",
+      "- 中文English #中文English `$x_1$` $x_1  + y_2$\n\n  ```text\n  中文English #中文English\n  ```\n\n  $$\n  x_1  + y_2\n  $$\n",
+      "- 中文 English #中文English `$x_1$` $x_1  + y_2$\n\n  ```text\n  中文English #中文English\n  ```\n\n  $$\n  x_1  + y_2\n  $$\n",
+    ],
+  ]) {
+    test(`${name} (tabWidth=${tabWidth})`, () => {
+      const options = { ...DEFAULT_SETTINGS, tabWidth };
+      assert.equal(format(input, options), expected);
+      assert.equal(format(expected, options), expected);
+    });
+  }
+}
+
+test("#20: Chinese punctuation stays adjacent to English", () => {
+  const input =
+    "中文，English。Hello！World？Test：Value；Item（ABC）【DEF】「GHI」\n";
+  assert.equal(format(input), input);
+  assert.equal(format(`- ${input}`), `- ${input}`);
+});
+
+test("list formatting preserves link destinations and formats explicit labels", () => {
+  const input =
+    "- [中文English](https://example.com/中文English)\n  - <https://example.com/中文English>\n";
+  const expected =
+    "- [中文 English](https://example.com/中文English)\n  - <https://example.com/中文English>\n";
+  assert.equal(format(input), expected);
+  assert.equal(format(expected), expected);
+});
+
 test("#35: settings survive reload and formatting receives saved tab width", async () => {
   let saved;
   const controls = [];
@@ -151,9 +218,16 @@ test("#35: settings survive reload and formatting receives saved tab width", asy
       return this;
     }
   }
+  const receivedWidths = [];
   const Pangu = loadSource("main", {
     obsidian: { Plugin, PluginSettingTab, Setting },
-    "./util": util,
+    "./util": {
+      ...util,
+      format(content, options) {
+        receivedWidths.push(options?.tabWidth);
+        return format(content, options);
+      },
+    },
   }).default;
   const first = new Pangu();
   await first.onload();
@@ -167,7 +241,7 @@ test("#35: settings survive reload and formatting receives saved tab width", asy
     getCursor: () => ({ line: 0, ch: 0 }),
     getRange: () => "",
     getScrollInfo: () => ({ top: 0 }),
-    getValue: () => "- parent\n  - child",
+    getValue: () => "  - parent\n    - child",
     setValue: (value) => {
       output = value;
     },
@@ -175,9 +249,6 @@ test("#35: settings survive reload and formatting receives saved tab width", asy
     getLine: () => output.split("\n")[0],
     setCursor() {},
   });
-  assert.equal(
-    output,
-    format("- parent\n  - child", { ...DEFAULT_SETTINGS, tabWidth: "4" })
-  );
-  assert.ok(output.includes("    -   child"));
+  assert.equal(output, "  - parent\n    - child\n");
+  assert.deepEqual(receivedWidths, ["4", "4"]);
 });

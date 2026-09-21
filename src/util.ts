@@ -70,6 +70,21 @@ export function format(
     ...parser,
     parse(text: string, parsers: unknown, parserOptions: unknown) {
       const tree = parser.parse(text, parsers, parserOptions);
+      // Preserve each complete list container, including its continuation lines,
+      // quotes and code blocks. Reindenting a rendered list cannot reliably
+      // recover the original mixture of tabs and spaces.
+      tree.children.forEach((node: MarkdownNode) => {
+        const raw = text.slice(
+          node.position.start.offset,
+          node.position.end.offset
+        );
+        if (
+          containsList(node) ||
+          (node.type === "code" && /^(?: {4}|\t)/.test(raw))
+        ) {
+          preserveLayout(node, text);
+        }
+      });
       visit(tree, (node) => {
         if (node.type !== "math" && node.type !== "inlineMath") return;
         // The HTML printer emits literal text. Retain the math's AST position
@@ -105,6 +120,66 @@ export function format(
     new RegExp(`#${prefix}(\\d+)X`, "g"),
     (_match: string, index: string) => tags[+index]
   );
+}
+
+function containsList(node: MarkdownNode): boolean {
+  return node.type === "list" || !!node.children?.some(containsList);
+}
+
+function preserveLayout(node: MarkdownNode, text: string): void {
+  const lineStart = text.lastIndexOf("\n", node.position.start.offset - 1) + 1;
+  const prefix = text.slice(lineStart, node.position.start.offset);
+  const start = /^[ \t]*$/.test(prefix)
+    ? lineStart
+    : node.position.start.offset;
+  let raw = text.slice(start, node.position.end.offset);
+  const edits: Array<{ start: number; end: number; value: string }> = [];
+  const collect = (child: MarkdownNode): void => {
+    if (
+      [
+        "code",
+        "inlineCode",
+        "math",
+        "inlineMath",
+        "html",
+        "yaml",
+        "toml",
+        "definition",
+      ].includes(child.type)
+    )
+      return;
+    // Autolinks expose their destination as a text child. Format labels only
+    // for explicit Markdown links, never the URL itself.
+    if (child.type === "link" && text[child.position.start.offset] !== "[")
+      return;
+    if (child.type === "text") {
+      const from = child.position.start.offset;
+      const to = child.position.end.offset;
+      // Only prose receives spacing; punctuation, Markdown delimiters and
+      // structural whitespace remain byte-for-byte as written.
+      const value = text
+        .slice(from, to)
+        .replace(
+          /([\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}])([A-Za-z0-9])/gu,
+          "$1 $2"
+        )
+        .replace(
+          /([A-Za-z0-9])([\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}])/gu,
+          "$1 $2"
+        );
+      edits.push({ start: from - start, end: to - start, value });
+    }
+    child.children?.forEach(collect);
+  };
+  collect(node);
+  edits
+    .sort((a, b) => b.start - a.start)
+    .forEach((edit) => {
+      raw = raw.slice(0, edit.start) + edit.value + raw.slice(edit.end);
+    });
+  node.type = "html";
+  node.value = raw;
+  delete node.children;
 }
 
 interface MarkdownNode {
