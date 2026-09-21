@@ -1,0 +1,51 @@
+src/main.ts
+  45a964fa3eba07a9 13,91
+tests/regressions.test.cjs
+  45a964fa3eba07a9 104-170,221,224-230,244,252-253
+README.md
+  45a964fa3eba07a9 18-25
+src/util.ts
+  45a964fa3eba07a9 73-87,125-182
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "91df74b7aebf6ac9671274cf53f936e456cafd72",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 190,
+      "total_deletions": 39,
+      "accepted_lines": 163,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "src/util.ts": {
+          "additions": 86,
+          "deletions": 11,
+          "accepted_lines": 75
+        },
+        "src/main.ts": {
+          "additions": 2,
+          "deletions": 2,
+          "accepted_lines": 2
+        },
+        "README.md": {
+          "additions": 8,
+          "deletions": 3,
+          "accepted_lines": 8
+        },
+        "tests/regressions.test.cjs": {
+          "additions": 94,
+          "deletions": 23,
+          "accepted_lines": 78
+        }
+      }
+    }
+  }
+}
