@@ -12,11 +12,16 @@ Obsidian Pangu 为 Markdown 正文补充中英文间距，同时保护笔记语�
 
 ## Behavior constraints
 
+- 默认 `spacing` 模式只补空格，保留原始 Markdown 布局、文首/段间/文末空行、空白行中的空格或 Tab、换行符类型及末尾换行状态。
+- `markdown` 模式为可选完整排版；缩进宽度和内嵌代码格式化设置仅在该模式生效。旧设置没有模式字段时使用 `spacing`，模式切换应保存并在重载后保持。
 - 行内公式 `$...$` 和块级公式 `$$...$$` 保留原文，包括分隔符、下标和内部空白；不提供公式格式化开关。
+- 行内公式与行内代码直接紧邻文字或数字时补外侧空格，不拆开标点、不改动内部内容，也不将该规则应用到块级公式或代码块。
+- 引用链接的隐式标识符和链接目标不得因补空格而改变；只处理显式标签中的正文。
 - 标签不得被空格拆开，覆盖中英文、嵌套标签、emoji 及组合字符。
 - 列表保留原有 Tab、空格、符号、编号及换行；正文间距处理不得改写代码、公式或链接目标。
 - 编辑器入口不得通过 `.trim()` 丢弃文档首行缩进。
 - 设置应在重载后保持，并传递给格式化器。
+- 设置页同时维护 `getSettingDefinitions()` 和 `display()`：前者用于 Obsidian 1.13+ 的设置搜索与自动绑定，后者兼容旧版；两者的名称、选项、默认值和保存行为须保持一致。
 
 ## Validation
 
@@ -30,10 +35,14 @@ Obsidian Pangu 为 Markdown 正文补充中英文间距，同时保护笔记语�
 
 ## Release
 
+- 展示名称使用官方登记的 `PanGu`，插件 ID 保持 `obsidian-pangu`；不得为改名新建插件 ID。
+- `package.json` 声明 MIT，根目录必须保留完整 `LICENSE`；插件描述以英文句末标点结尾。
+- Obsidian API 开发依赖固定到不可变版本，不使用 `master` 压缩包；更新依赖后重新生成 `yarn.lock` 并验证冻结安装，不跳过完整性校验。
 - 发布前同步 `package.json`、`manifest.json` 和 `HISTORY.md`；标签使用不带 `v` 的版本号。
-- 推送版本标签会触发 `.github/workflows/releases.yml`，在 Node.js 22 下安装依赖、运行测试、检查版本并构建。
-- 发布必须包含 `main.js`、`manifest.json` 和 `obsidian-pangu-<version>.zip`；压缩包内为 `obsidian-pangu/main.js` 与 `obsidian-pangu/manifest.json`。
+- 推送版本标签会触发 `.github/workflows/releases.yml`，在 Node.js 22 下使用 Yarn 1.22.22 冻结安装依赖、运行测试、检查版本并构建。
+- Release 只上传 `main.js` 和 `manifest.json`；如将来需要样式可上传 `styles.css`，不再上传额外 ZIP。历史 Release 不自动删除或覆盖。
 - 等待发布任务成功并核对下载产物后，再宣布发布完成、回复或关闭对应 Issue。
+- GitHub 发布成功不代表市场恢复可见；必须另外检查 Obsidian Community 的目录状态与审核结果。
 
 ## Documentation
 

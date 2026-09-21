@@ -1,15 +1,17 @@
 import { App, MarkdownView, Plugin, PluginSettingTab, Setting } from "obsidian";
+import type { SettingDefinitionItem } from "obsidian";
+import type { Editor as CodeMirrorEditor } from "codemirror";
 import { DEFAULT_SETTINGS, format, IPanGuSetting } from "./util";
 
 export default class Pangu extends Plugin {
   settings: IPanGuSetting = DEFAULT_SETTINGS;
 
-  format(cm: CodeMirror.Editor): void {
+  format(cm: CodeMirrorEditor): void {
     let cursor = cm.getCursor();
     let cursorContent = cm.getRange({ ...cursor, ch: 0 }, cursor);
     const { top } = cm.getScrollInfo();
 
-    cursorContent = format(cursorContent,this.settings);
+    cursorContent = format(cursorContent, this.settings);
     let content = cm.getValue();
     content = format(content, this.settings);
 
@@ -18,12 +20,13 @@ export default class Pangu extends Plugin {
 
     // 保持光标格式化后不变
     const newDocLine = cm.getLine(cursor.line);
-    try {
+    const match = newDocLine?.indexOf(cursorContent) ?? -1;
+    if (match >= 0) {
       cursor = {
         ...cursor,
-        ch: newDocLine.indexOf(cursorContent) + cursorContent.length,
+        ch: match + cursorContent.length,
       };
-    } catch (error) {}
+    }
 
     cm.setCursor(cursor);
   }
@@ -40,23 +43,9 @@ export default class Pangu extends Plugin {
           this.format(activeLeafView?.sourceMode?.cmEditor);
         }
       },
-      hotkeys: [
-        {
-          modifiers: ["Mod", "Shift"],
-          key: "s",
-        },
-        {
-          modifiers: ["Ctrl", "Shift"],
-          key: "s",
-        },
-      ],
     });
     await this.loadSettings();
     this.addSettingTab(new PanguSettingTab(this.app, this));
-  }
-
-  onunload() {
-    console.log("unloading plugin");
   }
 
   async loadSettings() {
@@ -76,19 +65,78 @@ class PanguSettingTab extends PluginSettingTab {
     this.plugin = plugin;
   }
 
+  // Obsidian 1.13+ uses these searchable, automatically persisted controls.
+  getSettingDefinitions(): SettingDefinitionItem<keyof IPanGuSetting>[] {
+    return [
+      {
+        name: "快速开始",
+        desc: "在命令面板中运行「为中英文字符间自动加入空格」，或前往「设置 - 快捷键」自行绑定快捷键。",
+      },
+      {
+        name: "格式化模式",
+        desc: "默认只补空格，保留空行和 Markdown 布局；完整排版会规范化其他 Markdown 布局。两种模式都保护公式原文",
+        control: {
+          type: "dropdown",
+          key: "formatMode",
+          defaultValue: DEFAULT_SETTINGS.formatMode,
+          options: {
+            spacing: "只补空格（保留布局）",
+            markdown: "完整 Markdown 排版",
+          },
+        },
+      },
+      {
+        name: "缩进宽度",
+        desc: "仅完整排版模式生效；列表始终保留原有的 Tab 和空格缩进",
+        control: {
+          type: "dropdown",
+          key: "tabWidth",
+          defaultValue: DEFAULT_SETTINGS.tabWidth,
+          options: { "2": "2个空格", "4": "4个空格" },
+        },
+      },
+      {
+        name: "格式化内嵌代码",
+        desc: "仅完整排版模式生效；只补空格模式不修改代码。行内代码始终保留原文",
+        control: {
+          type: "toggle",
+          key: "embeddedLanguageFormatting",
+          defaultValue: DEFAULT_SETTINGS.embeddedLanguageFormatting,
+        },
+      },
+    ];
+  }
+
+  // Older Obsidian versions still render the imperative settings page.
   display(): void {
     let { containerEl } = this;
     containerEl.empty();
-    containerEl.createEl("h2", { text: "Pangu 使用说明" });
     new Setting(containerEl)
       .setName("快速开始")
       .setDesc(
-        "默认快捷键为:Mac - Command + Shift + S，Windows -  Shift + Ctrl + S。当然，您可以到「设置 - 快捷键」里进行更改。"
+        "在命令面板中运行「为中英文字符间自动加入空格」，或前往「设置 - 快捷键」自行绑定快捷键。"
       );
 
     new Setting(containerEl)
+      .setName("格式化模式")
+      .setDesc(
+        "默认只补空格，保留空行和 Markdown 布局；完整排版会规范化其他 Markdown 布局。两种模式都保护公式原文"
+      )
+      .addDropdown((dropdown) => {
+        dropdown
+          .addOption("spacing", "只补空格（保留布局）")
+          .addOption("markdown", "完整 Markdown 排版")
+          .setValue(this.plugin.settings.formatMode || "spacing")
+          .onChange(async (value) => {
+            this.plugin.settings.formatMode =
+              value === "markdown" ? "markdown" : "spacing";
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
       .setName("缩进宽度")
-      .setDesc("指定其他内容的格式化缩进宽度；列表始终保留原有的 Tab 和空格缩进")
+      .setDesc("仅完整排版模式生效；列表始终保留原有的 Tab 和空格缩进")
       .addDropdown((dropdown) => {
         dropdown
           .addOption("2", "2个空格")
@@ -102,7 +150,9 @@ class PanguSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("格式化内嵌代码")
-      .setDesc("指定格式化时，是否格式化文档中的内嵌代码")
+      .setDesc(
+        "仅完整排版模式生效；只补空格模式不修改代码。行内代码始终保留原文"
+      )
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.embeddedLanguageFormatting)

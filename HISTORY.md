@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Default to spacing-only formatting that preserves Markdown layout; keep full Markdown formatting available as a saved mode.
+- Add exterior spacing around inline math and code next to letters or numbers, without changing their contents or separating punctuation (#40, #37).
+- Support searchable declarative settings in Obsidian 1.13+ while retaining the settings page for older versions.
+
+### Fixed
+
+- Preserve leading, internal, and trailing blank lines, whitespace-only lines, line endings, and the original final-newline state in spacing-only mode (#41, #39, #10).
+- Protect shortcut/collapsed reference identifiers when applying source-level spacing.
+
+### Maintenance
+
+- Use the registered display name `PanGu` without changing the plugin ID, add the already-declared MIT license, and update the directory description.
+- Pin the Obsidian API dependency to a registry release, refresh the Yarn lockfile, and use frozen installs for release builds.
+- Limit new release assets to the supported plugin files; stop uploading an additional ZIP archive.
+- Remove default shortcut assignments, unnecessary console logging, empty error handling, the redundant settings heading, an explicit `any` type, and an unnecessary regex escape reported by directory review.
+
 ## [1.6.3](https://github.com/Natumsol/obsidian-pangu/compare/1.6.2...1.6.3) - 2026-09-21
 
 ### Fixed

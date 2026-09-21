@@ -5,9 +5,6 @@ on:
     tags:
       - '*'
 
-env:
-  PLUGIN_NAME: obsidian-pangu
-
 permissions:
   contents: write
 
@@ -23,15 +20,10 @@ jobs:
       - name: Build
         id: build
         run: |
-          npm install
+          npx --yes --package=yarn@1.22.22 yarn install --frozen-lockfile --non-interactive
           npm test
           node -e 'const p = require("./package.json"); const m = require("./manifest.json"); if (p.version !== m.version || m.version !== process.env.GITHUB_REF_NAME) throw new Error("Release version mismatch");'
           npm run build --if-present
-          mkdir ${{ env.PLUGIN_NAME }}
-          cp dist/main.js manifest.json ${{ env.PLUGIN_NAME }}
-          zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
-          ls
-          echo "tag_name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -43,16 +35,6 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload zip file
-        id: upload-zip
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ env.PLUGIN_NAME }}.zip
-          asset_name: ${{ env.PLUGIN_NAME }}-${{ steps.build.outputs.tag_name }}.zip
-          asset_content_type: application/zip
       - name: Upload main.js
         id: upload-main
         uses: actions/upload-release-asset@v1

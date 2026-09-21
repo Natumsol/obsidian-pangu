@@ -2,18 +2,23 @@
 import prettier from "prettier/esm/standalone";
 // @ts-ignore
 import markdownParser from "prettier/esm/parser-markdown";
+import type { Options } from "prettier";
 
 export interface IPanGuSetting {
   tabWidth: string;
   embeddedLanguageFormatting: boolean;
+  formatMode?: "spacing" | "markdown";
 }
 
 export const DEFAULT_SETTINGS: IPanGuSetting = {
   tabWidth: "2",
   embeddedLanguageFormatting: true,
+  formatMode: "spacing",
 };
 
-function parseOptions(options: IPanGuSetting): any {
+function parseOptions(
+  options: IPanGuSetting
+): Pick<Options, "tabWidth" | "embeddedLanguageFormatting"> {
   const { tabWidth, embeddedLanguageFormatting } = options;
 
   return {
@@ -83,11 +88,28 @@ export function format(
     opening = -1;
   }
 
+  visit(ast, (node) => {
+    if (isReferenceIdentifier(node)) return false;
+    if (node.type !== "inlineCode" && node.type !== "inlineMath") return;
+    const { start, end } = node.position;
+    if (
+      (node.type === "inlineMath" && content.startsWith("$$", start.offset)) ||
+      replacements.some(
+        (edit) => edit.start < end.offset && edit.end > start.offset
+      )
+    )
+      return;
+    if (/[\p{L}\p{N}]$/u.test(content.slice(0, start.offset)))
+      replacements.push({ start: start.offset, end: start.offset, value: " " });
+    if (/^[\p{L}\p{N}]/u.test(content.slice(end.offset)))
+      replacements.push({ start: end.offset, end: end.offset, value: " " });
+  });
+
   const tags: string[] = [];
   // So includes emoji and symbols; marks, modifiers, ZWJ and tag characters
   // keep multi-code-point emoji sequences intact without consuming punctuation.
   const tagPattern =
-    /#[\p{L}\p{M}\p{N}\p{So}\p{Emoji_Modifier}\u200d\u{e0020}-\u{e007f}_\/-]+/gu;
+    /#[\p{L}\p{M}\p{N}\p{So}\p{Emoji_Modifier}\u200d\u{e0020}-\u{e007f}_/-]+/gu;
   while ((match = tagPattern.exec(content)) !== null) {
     const start = match.index;
     if (
@@ -130,7 +152,7 @@ export function format(
         }
       });
       visit(tree, (node) => {
-        if (node.type !== "math" && node.type !== "inlineMath") return;
+        if (!["math", "inlineMath", "inlineCode"].includes(node.type)) return;
         // The HTML printer emits literal text. Retain the math's AST position
         // and inline/block context without injecting Markdown code fences.
         // Container prefixes are emitted by the parent list/blockquote.
@@ -151,14 +173,22 @@ export function format(
       return tree;
     },
   };
-  const formatted = prettier.format(processedContent, {
-    parser: "pangu-markdown",
-    plugins: [
-      markdownParser,
-      { parsers: { "pangu-markdown": protectedParser } },
-    ],
-    ...parseOptions(options),
-  });
+  const formatted =
+    options.formatMode !== "markdown"
+      ? spaceProse(
+          parser.parse(processedContent, {}, {}),
+          processedContent,
+          0,
+          processedContent.length
+        )
+      : prettier.format(processedContent, {
+          parser: "pangu-markdown",
+          plugins: [
+            markdownParser,
+            { parsers: { "pangu-markdown": protectedParser } },
+          ],
+          ...parseOptions(options),
+        });
 
   return formatted
     .replace(
@@ -187,9 +217,25 @@ function preserveLayout(node: MarkdownNode, text: string): void {
   const start = /^[ \t]*$/.test(prefix)
     ? lineStart
     : node.position.start.offset;
-  let raw = text.slice(start, node.position.end.offset);
+  node.value = spaceProse(node, text, start, node.position.end.offset);
+  node.type = "html";
+  delete node.children;
+}
+
+// Edit source ranges rather than printing the AST: whitespace, Markdown
+// markers, line endings, and the presence/absence of a final newline survive.
+function spaceProse(
+  node: MarkdownNode,
+  text: string,
+  start: number,
+  end: number
+): string {
+  let raw = text.slice(start, end);
   const edits: Array<{ start: number; end: number; value: string }> = [];
   const collect = (child: MarkdownNode): void => {
+    // In shortcut/collapsed references the visible label is also the target
+    // identifier. Inserting a space there would break the reference.
+    if (isReferenceIdentifier(child)) return;
     if (
       [
         "code",
@@ -232,13 +278,12 @@ function preserveLayout(node: MarkdownNode, text: string): void {
     .forEach((edit) => {
       raw = raw.slice(0, edit.start) + edit.value + raw.slice(edit.end);
     });
-  node.type = "html";
-  node.value = raw;
-  delete node.children;
+  return raw;
 }
 
 interface MarkdownNode {
   type: string;
+  referenceType?: string;
   value?: string;
   children?: MarkdownNode[];
   position: {
@@ -250,8 +295,12 @@ interface MarkdownNode {
 
 function visit(
   node: MarkdownNode,
-  callback: (node: MarkdownNode) => void
+  callback: (node: MarkdownNode) => void | boolean
 ): void {
-  callback(node);
+  if (callback(node) === false) return;
   node.children?.forEach((child) => visit(child, callback));
+}
+
+function isReferenceIdentifier(node: MarkdownNode): boolean {
+  return node.type === "linkReference" && node.referenceType !== "full";
 }
