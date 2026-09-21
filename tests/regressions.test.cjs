@@ -1,37 +1,74 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const vm = require("node:vm");
-const ts = require("typescript");
+const { loadSource, PluginStub, makeEditor } = require("./helpers.cjs");
 
-// Load the actual TS sources, substituting only browser ESM entry points and
-// Obsidian's host objects; no application logic is duplicated here.
-function loadSource(file, overrides = {}) {
-  const source = fs.readFileSync(`${__dirname}/../src/${file}.ts`, "utf8");
-  const { outputText } = ts.transpileModule(source, {
-    compilerOptions: {
-      module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.ES2018,
-      esModuleInterop: true,
-    },
-  });
-  const module = { exports: {} };
-  vm.runInNewContext(
-    outputText,
-    {
-      module,
-      exports: module.exports,
-      console,
-      require: (name) =>
-        overrides[name] || require(name.replace("prettier/esm/", "prettier/")),
-    },
-    { filename: `${file}.js` }
-  );
-  return module.exports;
-}
+test("#44: bare FTP and Obsidian URI targets remain unchanged", () => {
+  const { format } = loadSource("util");
+  for (const formatMode of ["spacing", "markdown"]) {
+    for (const uri of [
+      "ftp://example.com/!中文",
+      "obsidian://open?vault=示例;文件",
+    ]) {
+      assert.equal(
+        format(uri + "\n", {
+          formatMode,
+          tabWidth: "2",
+          embeddedLanguageFormatting: false,
+        }),
+        uri + "\n"
+      );
+    }
+  }
+});
+
+test("#44: bare URI protection stops at Markdown structure boundaries", () => {
+  const { format } = loadSource("util");
+  for (const formatMode of ["spacing", "markdown"]) {
+    for (const [source, expected] of [
+      ["**ftp://example.com/!中文**\n", "**ftp://example.com/!中文**\n"],
+      ["ftp://example.com/!中文`code`\n", "ftp://example.com/!中文 `code`\n"],
+    ])
+      assert.equal(
+        format(source, {
+          formatMode,
+          tabWidth: "2",
+          embeddedLanguageFormatting: false,
+        }),
+        expected
+      );
+  }
+});
 
 const util = loadSource("util");
 const { format, DEFAULT_SETTINGS } = util;
+
+test("#44: ASCII sentence punctuation receives spacing before Chinese prose", () => {
+  for (const formatMode of ["spacing", "markdown"]) {
+    const options = { ...DEFAULT_SETTINGS, formatMode };
+    const input =
+      "It can't be helped.谁也没办法。Hello,中文!真的?是:这样;结束\n";
+    const expected =
+      "It can't be helped. 谁也没办法。Hello, 中文! 真的? 是: 这样; 结束\n";
+    assert.equal(format(input, options), expected);
+    assert.equal(format(expected, options), expected);
+  }
+});
+
+test("#44: punctuation in URLs, formulas, code and reference targets stays literal", () => {
+  const input =
+    "`Hello.中文` $x!中文$ [链接](https://example.com/!中文) <https://example.com/!中文>\n\n```txt\nHello.中文\n```\n\n[ref]: https://example.com/!中文\n";
+  for (const formatMode of ["spacing", "markdown"]) {
+    assert.equal(format(input, { ...DEFAULT_SETTINGS, formatMode }), input);
+  }
+  assert.equal(
+    format("https://example.com/!中文 foo@example.com"),
+    "https://example.com/!中文 foo@example.com"
+  );
+  assert.equal(
+    format("中文，后文。还有；文字！问？"),
+    "中文，后文。还有；文字！问？"
+  );
+});
 const matrix = String.raw`$$
 \begin{bmatrix}
 1 & k_{21} & k_{31} & \cdots & k_{n1} \\
@@ -297,7 +334,7 @@ test("list formatting preserves link destinations and formats explicit labels", 
 test("#35: settings survive reload and formatting receives saved tab width", async () => {
   let saved;
   const controls = [];
-  class Plugin {
+  class Plugin extends PluginStub {
     async loadData() {
       return saved;
     }
@@ -350,7 +387,12 @@ test("#35: settings survive reload and formatting receives saved tab width", asy
   }
   const receivedWidths = [];
   const Pangu = loadSource("main", {
-    obsidian: { Plugin, PluginSettingTab, Setting },
+    obsidian: {
+      Plugin,
+      PluginSettingTab,
+      Setting,
+      requireApiVersion: () => true,
+    },
     "./util": {
       ...util,
       format(content, options) {
@@ -367,26 +409,15 @@ test("#35: settings survive reload and formatting receives saved tab width", asy
   const second = new Pangu();
   await second.onload();
   assert.equal(second.settings.tabWidth, "4");
-  let output;
-  second.format({
-    getCursor: () => ({ line: 0, ch: 0 }),
-    getRange: () => "",
-    getScrollInfo: () => ({ top: 0 }),
-    getValue: () => "  - parent\n    - child",
-    setValue: (value) => {
-      output = value;
-    },
-    scrollTo() {},
-    getLine: () => output.split("\n")[0],
-    setCursor() {},
-  });
-  assert.equal(output, "  - parent\n    - child");
-  assert.deepEqual(receivedWidths, ["4", "4"]);
+  const editor = makeEditor("  - parent\n    - child");
+  second.format(editor);
+  assert.equal(editor.value, "  - parent\n    - child");
+  assert.deepEqual(receivedWidths, ["4"]);
 });
 
 test("declarative settings expose all controls and persist through the host binding", async () => {
   let saved = { tabWidth: "4", embeddedLanguageFormatting: false };
-  class Plugin {
+  class Plugin extends PluginStub {
     async loadData() {
       return saved;
     }
@@ -425,6 +456,7 @@ test("declarative settings expose all controls and persist through the host bind
       ["格式化模式", "dropdown", "formatMode"],
       ["缩进宽度", "dropdown", "tabWidth"],
       ["格式化内嵌代码", "toggle", "embeddedLanguageFormatting"],
+      ["输入时自动补空格", "toggle", "autoSpacing"],
     ]
   );
   assert.deepEqual(settings[0].control.options, {
@@ -441,6 +473,7 @@ test("declarative settings expose all controls and persist through the host bind
     formatMode: "markdown",
     tabWidth: "2",
     embeddedLanguageFormatting: true,
+    autoSpacing: true,
   })) {
     await first.tab.setControlValue(key, value);
   }
@@ -449,12 +482,13 @@ test("declarative settings expose all controls and persist through the host bind
   assert.equal(second.tab.getControlValue("formatMode"), "markdown");
   assert.equal(second.tab.getControlValue("tabWidth"), "2");
   assert.equal(second.tab.getControlValue("embeddedLanguageFormatting"), true);
+  assert.equal(second.tab.getControlValue("autoSpacing"), true);
 });
 
 test("editor uses spacing for old settings and persists the selected formatting mode", async () => {
   let saved = { tabWidth: "4", embeddedLanguageFormatting: false };
   const controls = new Map();
-  class Plugin {
+  class Plugin extends PluginStub {
     async loadData() {
       return saved;
     }
@@ -505,25 +539,19 @@ test("editor uses spacing for old settings and persists the selected formatting 
     }
   }
   const Pangu = loadSource("main", {
-    obsidian: { Plugin, PluginSettingTab, Setting },
+    obsidian: {
+      Plugin,
+      PluginSettingTab,
+      Setting,
+      requireApiVersion: () => true,
+    },
     "./util": util,
   }).default;
   const input = "\n# 标题Title\n## 副题Title\n\n\n内容`code`中文$x_1  + y_2$后";
   function edit(plugin) {
-    let text = input;
-    plugin.format({
-      getCursor: () => ({ line: 1, ch: 0 }),
-      getRange: () => "",
-      getScrollInfo: () => ({ top: 12 }),
-      getValue: () => text,
-      setValue: (value) => {
-        text = value;
-      },
-      scrollTo() {},
-      getLine: (line) => text.split("\n")[line],
-      setCursor() {},
-    });
-    return text;
+    const editor = makeEditor(input);
+    plugin.format(editor);
+    return editor.value;
   }
   const first = new Pangu();
   await first.onload();
@@ -532,6 +560,7 @@ test("editor uses spacing for old settings and persists the selected formatting 
     "\n# 标题 Title\n## 副题 Title\n\n\n内容 `code` 中文 $x_1  + y_2$ 后";
   assert.equal(edit(first), expected);
   assert.equal(controls.get("格式化模式")?.value, "spacing");
+  assert.equal(controls.get("输入时自动补空格")?.value, false);
   for (const { name, control } of first.tab.getSettingDefinitions()) {
     if (!control) continue;
     const legacyControl = controls.get(name);
@@ -541,10 +570,12 @@ test("editor uses spacing for old settings and persists the selected formatting 
     }
   }
   await controls.get("格式化模式").change("markdown");
+  await controls.get("输入时自动补空格").change(true);
   const second = new Pangu();
   await second.onload();
   second.tab.display();
   assert.equal(controls.get("格式化模式").value, "markdown");
+  assert.equal(controls.get("输入时自动补空格").value, true);
   assert.equal(
     edit(second),
     "# 标题 Title\n\n## 副题 Title\n\n内容 `code` 中文 $x_1  + y_2$ 后\n"

@@ -4,16 +4,22 @@ import prettier from "prettier/esm/standalone";
 import markdownParser from "prettier/esm/parser-markdown";
 import type { Options } from "prettier";
 
+const uriPattern = /\b[A-Za-z][A-Za-z0-9+.-]*:\/\/[^\s<>]+/gu;
+const tagPattern =
+  /#[\p{L}\p{M}\p{N}\p{So}\p{Emoji_Modifier}\u200d\u{e0020}-\u{e007f}_/-]+/gu;
+
 export interface IPanGuSetting {
   tabWidth: string;
   embeddedLanguageFormatting: boolean;
   formatMode?: "spacing" | "markdown";
+  autoSpacing?: boolean;
 }
 
 export const DEFAULT_SETTINGS: IPanGuSetting = {
   tabWidth: "2",
   embeddedLanguageFormatting: true,
   formatMode: "spacing",
+  autoSpacing: false,
 };
 
 function parseOptions(
@@ -105,11 +111,31 @@ export function format(
       replacements.push({ start: end.offset, end: end.offset, value: " " });
   });
 
+  // Markdown autolinking only recognizes some schemes. Preserve other bare
+  // URIs too, including Obsidian deep links, before either formatter runs.
+  const uris: string[] = [];
+  visitProse(ast, content, (node) => {
+    const raw = content.slice(
+      node.position.start.offset,
+      node.position.end.offset
+    );
+    const matcher = new RegExp(uriPattern);
+    let uri: RegExpExecArray | null;
+    while ((uri = matcher.exec(raw)) !== null) {
+      const start = node.position.start.offset + uri.index;
+      const end = start + uri[0].length;
+      // Respect already-masked display math, but allow explicit link labels.
+      if (replacements.some((edit) => start < edit.end && end > edit.start))
+        continue;
+      replacements.push({ start, end, value: `${prefix}URI${uris.length}X` });
+      excluded.push([start, end]);
+      uris.push(uri[0]);
+    }
+  });
   const tags: string[] = [];
   // So includes emoji and symbols; marks, modifiers, ZWJ and tag characters
   // keep multi-code-point emoji sequences intact without consuming punctuation.
-  const tagPattern =
-    /#[\p{L}\p{M}\p{N}\p{So}\p{Emoji_Modifier}\u200d\u{e0020}-\u{e007f}_/-]+/gu;
+  tagPattern.lastIndex = 0;
   while ((match = tagPattern.exec(content)) !== null) {
     const start = match.index;
     if (
@@ -181,16 +207,28 @@ export function format(
           0,
           processedContent.length
         )
-      : prettier.format(processedContent, {
-          parser: "pangu-markdown",
-          plugins: [
-            markdownParser,
-            { parsers: { "pangu-markdown": protectedParser } },
-          ],
-          ...parseOptions(options),
-        });
+      : prettier.format(
+          spaceProse(
+            parser.parse(processedContent, {}, {}),
+            processedContent,
+            0,
+            processedContent.length
+          ),
+          {
+            parser: "pangu-markdown",
+            plugins: [
+              markdownParser,
+              { parsers: { "pangu-markdown": protectedParser } },
+            ],
+            ...parseOptions(options),
+          }
+        );
 
   return formatted
+    .replace(
+      new RegExp(`${prefix}URI(\\d+)X`, "g"),
+      (_match: string, index: string) => uris[+index]
+    )
     .replace(
       new RegExp(`#${prefix}(\\d+)X`, "g"),
       (_match: string, index: string) => tags[+index]
@@ -232,6 +270,70 @@ function spaceProse(
 ): string {
   let raw = text.slice(start, end);
   const edits: Array<{ start: number; end: number; value: string }> = [];
+  visitProse(node, text, (child) => {
+    const from = child.position.start.offset;
+    const to = child.position.end.offset;
+    // Only prose receives spacing; Markdown delimiters and structural
+    // whitespace remain unchanged, including link/reference destinations.
+    const value = text
+      .slice(from, to)
+      .replace(
+        /([\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}])([A-Za-z0-9])/gu,
+        "$1 $2"
+      )
+      .replace(
+        /([A-Za-z0-9])([\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}])/gu,
+        "$1 $2"
+      )
+      .replace(/([.,!?:;])(?=\p{Script=Han})/gu, "$1 ");
+    edits.push({ start: from - start, end: to - start, value });
+  });
+  edits
+    .sort((a, b) => b.start - a.start)
+    .forEach((edit) => {
+      raw = raw.slice(0, edit.start) + edit.value + raw.slice(edit.end);
+    });
+  return raw;
+}
+
+// Automatic typing asks only about candidate positions. Parse once for
+// context; never format or diff the whole note on a keystroke.
+export function proseSpacingPositions(
+  text: string,
+  positions: number[]
+): number[] {
+  const protectedRanges: Array<[number, number]> = [];
+  for (const pattern of [tagPattern, uriPattern]) {
+    const matcher = new RegExp(pattern);
+    let match: RegExpExecArray | null;
+    while ((match = matcher.exec(text)) !== null) {
+      if (pattern === tagPattern && isEscaped(text, match.index)) continue;
+      protectedRanges.push([match.index, match.index + match[0].length]);
+    }
+  }
+  const candidates = positions.filter(
+    (pos) => !protectedRanges.some(([from, to]) => pos > from && pos < to)
+  );
+  if (!candidates.length) return [];
+  const allowed = new Set<number>();
+  visitProse(
+    markdownParser.parsers.markdown.parse(text, {}, {}),
+    text,
+    (node) => {
+      for (const pos of candidates) {
+        if (pos > node.position.start.offset && pos < node.position.end.offset)
+          allowed.add(pos);
+      }
+    }
+  );
+  return candidates.filter((pos) => allowed.has(pos));
+}
+
+function visitProse(
+  node: MarkdownNode,
+  text: string,
+  callback: (node: MarkdownNode) => void
+): void {
   const collect = (child: MarkdownNode): void => {
     // In shortcut/collapsed references the visible label is also the target
     // identifier. Inserting a space there would break the reference.
@@ -253,32 +355,10 @@ function spaceProse(
     // for explicit Markdown links, never the URL itself.
     if (child.type === "link" && text[child.position.start.offset] !== "[")
       return;
-    if (child.type === "text") {
-      const from = child.position.start.offset;
-      const to = child.position.end.offset;
-      // Only prose receives spacing; punctuation, Markdown delimiters and
-      // structural whitespace remain byte-for-byte as written.
-      const value = text
-        .slice(from, to)
-        .replace(
-          /([\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}])([A-Za-z0-9])/gu,
-          "$1 $2"
-        )
-        .replace(
-          /([A-Za-z0-9])([\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}])/gu,
-          "$1 $2"
-        );
-      edits.push({ start: from - start, end: to - start, value });
-    }
+    if (child.type === "text") callback(child);
     child.children?.forEach(collect);
   };
   collect(node);
-  edits
-    .sort((a, b) => b.start - a.start)
-    .forEach((edit) => {
-      raw = raw.slice(0, edit.start) + edit.value + raw.slice(edit.end);
-    });
-  return raw;
 }
 
 interface MarkdownNode {

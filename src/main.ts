@@ -1,51 +1,55 @@
 import { App, MarkdownView, Plugin, PluginSettingTab, Setting } from "obsidian";
-import type { SettingDefinitionItem } from "obsidian";
-import type { Editor as CodeMirrorEditor } from "codemirror";
+import type { Editor, SettingDefinitionItem } from "obsidian";
 import { DEFAULT_SETTINGS, format, IPanGuSetting } from "./util";
+import { applyEdits, textEdits } from "./editing";
+import { bindAutomaticSpacing } from "./automatic-spacing";
 
 export default class Pangu extends Plugin {
   settings: IPanGuSetting = DEFAULT_SETTINGS;
+  private automaticBindings = new Map<MarkdownView, () => void>();
+  private stopped = false;
 
-  format(cm: CodeMirrorEditor): void {
-    let cursor = cm.getCursor();
-    let cursorContent = cm.getRange({ ...cursor, ch: 0 }, cursor);
-    const { top } = cm.getScrollInfo();
-
-    cursorContent = format(cursorContent, this.settings);
-    let content = cm.getValue();
-    content = format(content, this.settings);
-
-    cm.setValue(content);
-    cm.scrollTo(null, top);
-
-    // 保持光标格式化后不变
-    const newDocLine = cm.getLine(cursor.line);
-    const match = newDocLine?.indexOf(cursorContent) ?? -1;
-    if (match >= 0) {
-      cursor = {
-        ...cursor,
-        ch: match + cursorContent.length,
-      };
-    }
-
-    cm.setCursor(cursor);
+  format(editor: Editor): void {
+    const before = editor.getValue();
+    applyEdits(editor, textEdits(before, format(before, this.settings)));
   }
 
   async onload() {
     this.addCommand({
       id: "pangu-format",
       name: "为中英文字符间自动加入空格",
-      callback: () => {
-        const activeLeafView =
-          this.app.workspace.getActiveViewOfType(MarkdownView);
-        if (activeLeafView) {
-          // @ts-ignore
-          this.format(activeLeafView?.sourceMode?.cmEditor);
-        }
-      },
+      editorCallback: (editor) => this.format(editor),
     });
     await this.loadSettings();
     this.addSettingTab(new PanguSettingTab(this.app, this));
+    const syncEditors = () => {
+      if (this.stopped) return;
+      const views = new Set<MarkdownView>();
+      this.app.workspace.iterateAllLeaves((leaf) => {
+        if (!(leaf.view instanceof MarkdownView)) return;
+        const view = leaf.view;
+        views.add(view);
+        if (!this.automaticBindings.has(view)) {
+          this.automaticBindings.set(
+            view,
+            bindAutomaticSpacing(view, () => this.settings.autoSpacing === true)
+          );
+        }
+      });
+      for (const [view, dispose] of this.automaticBindings) {
+        if (!views.has(view)) {
+          dispose();
+          this.automaticBindings.delete(view);
+        }
+      }
+    };
+    this.register(() => {
+      this.stopped = true;
+      this.automaticBindings.forEach((dispose) => dispose());
+      this.automaticBindings.clear();
+    });
+    this.registerEvent(this.app.workspace.on("layout-change", syncEditors));
+    this.app.workspace.onLayoutReady(syncEditors);
   }
 
   async loadSettings() {
@@ -104,6 +108,15 @@ class PanguSettingTab extends PluginSettingTab {
           defaultValue: DEFAULT_SETTINGS.embeddedLanguageFormatting,
         },
       },
+      {
+        name: "输入时自动补空格",
+        desc: "默认关闭；仅在输入确认后补充附近的中英文间距，不处理粘贴、删除或撤销。超过 10,000 UTF-16 单元的笔记请手动格式化",
+        control: {
+          type: "toggle",
+          key: "autoSpacing",
+          defaultValue: DEFAULT_SETTINGS.autoSpacing,
+        },
+      },
     ];
   }
 
@@ -158,6 +171,19 @@ class PanguSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.embeddedLanguageFormatting)
           .onChange(async (value) => {
             this.plugin.settings.embeddedLanguageFormatting = value;
+            await this.plugin.saveSettings();
+          })
+      );
+    new Setting(containerEl)
+      .setName("输入时自动补空格")
+      .setDesc(
+        "默认关闭；仅在输入确认后补充附近的中英文间距，不处理粘贴、删除或撤销。超过 10,000 UTF-16 单元的笔记请手动格式化"
+      )
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.autoSpacing === true)
+          .onChange(async (value) => {
+            this.plugin.settings.autoSpacing = value;
             await this.plugin.saveSettings();
           })
       );

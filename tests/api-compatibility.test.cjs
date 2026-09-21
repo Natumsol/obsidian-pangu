@@ -60,7 +60,7 @@ test("official API check rejects the previously advertised 0.9.12 minimum", () =
   assert.ok(messages.every((message) => message.ruleId === rule));
   assert.ok(
     messages.some((message) =>
-      message.message.includes("Workspace.getActiveViewOfType")
+      message.message.includes("Editor.getValue")
     )
   );
   assert.ok(

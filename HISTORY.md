@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Add opt-in automatic Chinese/English spacing after committed typing, with IME, protected-Markdown and editor-lifecycle guards (#32).
+- Add spaces after ASCII sentence punctuation immediately before Chinese prose (#44).
+
+### Fixed
+
+- Replace whole-document editor resets with local edits, preserving selection mapping and scroll position, and grouping changes into one undo transaction on supported hosts (#4).
+
 ## [1.7.3](https://github.com/Natumsol/obsidian-pangu/compare/1.7.2...1.7.3) - 2026-09-21
 
 ### Maintenance

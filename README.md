@@ -38,6 +38,35 @@ formula protection cannot be disabled. All settings are saved across restarts.
 On Obsidian 1.13 and later, these controls also appear in settings search; older
 versions keep the existing settings page.
 
+ASCII punctuation (`. , ! ? : ;`) directly before Chinese prose receives a
+following space, for example `It works.可以` → `It works. 可以`. Chinese
+punctuation, link destinations, code and formulas remain unchanged.
+
+Formatting uses local editor changes instead of resetting the whole document.
+It maps selections and restores the scroll position; unchanged documents are not
+written. Obsidian 0.13+ groups the changes into one undo transaction, while
+0.12.16 uses the compatible range-editing fallback.
+
+**输入时自动补空格** is a separate opt-in setting, disabled by default. It adds
+spaces only at Chinese/English-letter-or-number boundaries touched by newly
+typed text, after IME composition is committed. It never runs full Markdown
+formatting, even when that mode is selected for the manual command. Paste,
+deletion, undo/redo, replacement selections and multiple cursors are skipped.
+Code, formulas, tags and link targets stay protected. Unfinished Markdown is
+handled conservatively; finish the markup and use the manual command if needed.
+Automatic spacing is skipped in notes over 10,000 UTF-16 code units to avoid
+parsing large documents on each input; manual formatting remains available.
+
+### Editor acceptance checks
+
+Before releasing changes to editor integration, verify in a disposable vault in
+both Source mode and Live Preview: format a note with folded/nested headings,
+check folds and selection direction, then undo. Enable automatic spacing and
+type both `中文English` and `English中文` using a real Chinese IME. Check that
+composition is not interrupted, paste/delete/undo do not reinsert spaces, and
+switching files, pop-out windows or disabling/unloading the plugin leaves no
+pending changes. Host-mock tests do not replace these application checks.
+
 ## Development
 
 Install dependencies with Yarn Classic 1.22.22: `yarn install --frozen-lockfile`.
