@@ -8,25 +8,30 @@ on:
 env:
   PLUGIN_NAME: obsidian-pangu
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '14.x'
+          node-version: '22.x'
       - name: Build
         id: build
         run: |
           npm install
+          npm test
+          node -e 'const p = require("./package.json"); const m = require("./manifest.json"); if (p.version !== m.version || m.version !== process.env.GITHUB_REF_NAME) throw new Error("Release version mismatch");'
           npm run build --if-present
           mkdir ${{ env.PLUGIN_NAME }}
           cp dist/main.js manifest.json ${{ env.PLUGIN_NAME }}
           zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
           ls
-          echo "::set-output name=tag_name::$(git tag --sort version:refname | tail -n 1)"
+          echo "tag_name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

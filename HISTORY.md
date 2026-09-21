@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3](https://github.com/Natumsol/obsidian-pangu/compare/1.6.2...1.6.3) - 2026-09-21
+
+### Fixed
+
+- Preserve inline and display math, including subscripts, delimiters, internal whitespace, and single-line display formulas with spaces inside `$$` (#34).
+- Preserve mixed Chinese/English tags, including nested tags and composite emoji (#31).
+- Preserve list indentation, tabs, markers, numbering, and line breaks without inserting extra spaces after list markers (#43, #36, #20, #33).
+- Preserve document-leading indentation and indented code blocks.
+
+### Maintenance
+
+- Add 57 regression tests, including settings persistence coverage for the fix previously released in 1.6.2 (#35).
+- Run release tests on Node.js 22 before building and uploading assets.
+- Use an explicit TypeScript source pattern so fresh dependency installations compile reliably.
+- Document formatting guarantees and repository agent workflows.
+
 ## [1.6.2](https://github.com/Natumsol/obsidian-pangu/compare/1.6.1...1.6.2)
 
 ### Merged

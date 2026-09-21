@@ -23,9 +23,17 @@ Obsidian Pangu 为 Markdown 正文补充中英文间距，同时保护笔记语�
 - 修复 Bug 时先加入能复现问题的回归测试，再修改实现。
 - `npm test`：运行回归测试，需要 Node.js 18 或更新版本。
 - `npm run build`：构建到 `dist/`。
+- Rollup 的 TypeScript 插件显式包含 `src/**/*.ts`，避免旧插件的默认扩展通配模式在新安装的匹配依赖下漏掉源码。
 - 完整类型检查为 `./node_modules/.bin/tsc --noEmit`。此前本机遇到父目录全局类型冲突及缺失的 CodeMirror 声明，复查时应根据实际输出判断。
 - `./node_modules/.bin/tsc --noEmit --types node --skipLibCheck` 仅用于限定范围的源码检查，不得将其通过表述为完整类型检查通过。
 - 宿主模拟测试不等于真实 Obsidian 验证；明确区分测试、构建、产物检查与应用内验证。
+
+## Release
+
+- 发布前同步 `package.json`、`manifest.json` 和 `HISTORY.md`；标签使用不带 `v` 的版本号。
+- 推送版本标签会触发 `.github/workflows/releases.yml`，在 Node.js 22 下安装依赖、运行测试、检查版本并构建。
+- 发布必须包含 `main.js`、`manifest.json` 和 `obsidian-pangu-<version>.zip`；压缩包内为 `obsidian-pangu/main.js` 与 `obsidian-pangu/manifest.json`。
+- 等待发布任务成功并核对下载产物后，再宣布发布完成、回复或关闭对应 Issue。
 
 ## Documentation
 
