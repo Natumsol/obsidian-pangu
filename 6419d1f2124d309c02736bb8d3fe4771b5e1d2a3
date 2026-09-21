@@ -1,0 +1,112 @@
+HISTORY.md
+  45a964fa3eba07a9 8-18
+src/editing.ts
+  45a964fa3eba07a9 1-102
+tests/editor.test.cjs
+  45a964fa3eba07a9 1-396
+tests/api-compatibility.test.cjs
+  45a964fa3eba07a9 63
+README.md
+  45a964fa3eba07a9 41-69
+AGENTS.md
+  45a964fa3eba07a9 24-26
+tests/helpers.cjs
+  45a964fa3eba07a9 1-120
+src/util.ts
+  45a964fa3eba07a9 7-10,15,22,114-134,138,210-225,228-231,273-336,358
+src/main.ts
+  45a964fa3eba07a9 2,4-5,9-10,12-14,21,25-52,111-119,177-189
+tests/regressions.test.cjs
+  45a964fa3eba07a9 3,5-40,44-71,337,390-395,412-415,420,459,476,485,491,542-547,552-554,563,573,578
+src/automatic-spacing.ts
+  45a964fa3eba07a9 1-221
+tsconfig.json
+  45a964fa3eba07a9 1-16
+package.json
+  45a964fa3eba07a9 37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "6419d1f2124d309c02736bb8d3fe4771b5e1d2a3",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 1420,
+      "total_deletions": 399,
+      "accepted_lines": 1166,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "tests/helpers.cjs": {
+          "additions": 149,
+          "deletions": 29,
+          "accepted_lines": 120
+        },
+        "tests/api-compatibility.test.cjs": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "package.json": {
+          "additions": 1,
+          "accepted_lines": 1
+        },
+        "src/editing.ts": {
+          "additions": 115,
+          "deletions": 13,
+          "accepted_lines": 102
+        },
+        "tests/editor.test.cjs": {
+          "additions": 457,
+          "deletions": 61,
+          "accepted_lines": 396
+        },
+        "AGENTS.md": {
+          "additions": 4,
+          "deletions": 1,
+          "accepted_lines": 3
+        },
+        "tests/regressions.test.cjs": {
+          "additions": 104,
+          "deletions": 73,
+          "accepted_lines": 94
+        },
+        "src/automatic-spacing.ts": {
+          "additions": 312,
+          "deletions": 91,
+          "accepted_lines": 221
+        },
+        "src/util.ts": {
+          "additions": 145,
+          "deletions": 65,
+          "accepted_lines": 113
+        },
+        "src/main.ts": {
+          "additions": 71,
+          "deletions": 45,
+          "accepted_lines": 59
+        },
+        "HISTORY.md": {
+          "additions": 11,
+          "accepted_lines": 11
+        },
+        "tsconfig.json": {
+          "additions": 20,
+          "deletions": 19,
+          "accepted_lines": 16
+        },
+        "README.md": {
+          "additions": 30,
+          "deletions": 1,
+          "accepted_lines": 29
+        }
+      }
+    }
+  }
+}
