@@ -4,6 +4,7 @@
   "description": "A small plugin aims to add space between Chinese Characters and English Alphabet, and it is a boon for typographically compulsive people. ",
   "main": "main.js",
   "scripts": {
+    "test": "node --test tests/*.test.cjs",
     "dev": "rollup --config rollup.config.js -w",
     "build": "rollup --config rollup.config.js",
     "version": "auto-changelog -p && git add HISTORY.md",

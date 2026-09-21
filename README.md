@@ -7,6 +7,23 @@ A small plugin aims to add space between Chinese Characters and English Alphabet
 + 大多数人在 20 到 30 岁就已经过完自己的一生；一过了这个年龄段，他们就变成自己的影子。
 ```
 
+## Formatting behavior
+
+Obsidian tags such as `#中文English` are preserved while ordinary prose receives
+Chinese/English spacing. Both inline math (`$...$`) and display math (`$$...$$`,
+on one or multiple lines) are always preserved, including
+subscripts, delimiters, and whitespace within formulas. Code spans and fenced
+code blocks are not treated as math or tags.
+
+The formatter still normalizes Markdown layout, including list indentation and
+blank lines. The indentation setting is saved across restarts; choosing four
+spaces also affects spacing after list markers.
+
+## Development
+
+Run `npm test` (Node.js 18 or later) for formatter and settings regression tests,
+and `npm run build` to generate the plugin in `dist/`.
+
 ## Manual installation
 
 Download zip archive from [GitHub releases page](https://github.com/natumsol/obsidian-pangu/releases).
