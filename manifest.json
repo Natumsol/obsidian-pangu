@@ -1,7 +1,7 @@
 {
   "id": "obsidian-pangu",
   "name": "PanGu",
-  "version": "1.6.3",
+  "version": "1.7.0",
   "minAppVersion": "0.9.12",
   "description": "Add spaces between Chinese characters and English letters or numbers while preserving Markdown content.",
   "author": "Natumsol",
