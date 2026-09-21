@@ -1,0 +1,47 @@
+docs/agents/issue-tracker.md
+  45a964fa3eba07a9 1-28
+docs/agents/domain.md
+  45a964fa3eba07a9 1-20
+AGENTS.md
+  45a964fa3eba07a9 1-50
+docs/agents/triage-labels.md
+  45a964fa3eba07a9 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "70a3c0b2a4243f11b9ee0744372df8466db85a79",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 113,
+      "total_deletions": 0,
+      "accepted_lines": 113,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "docs/agents/triage-labels.md": {
+          "additions": 15,
+          "accepted_lines": 15
+        },
+        "AGENTS.md": {
+          "additions": 50,
+          "accepted_lines": 50
+        },
+        "docs/agents/domain.md": {
+          "additions": 20,
+          "accepted_lines": 20
+        },
+        "docs/agents/issue-tracker.md": {
+          "additions": 28,
+          "accepted_lines": 28
+        }
+      }
+    }
+  }
+}
