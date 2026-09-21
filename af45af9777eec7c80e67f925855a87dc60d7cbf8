@@ -1,0 +1,98 @@
+package.json
+  45a964fa3eba07a9 23
+manifest.json
+  45a964fa3eba07a9 3,6
+src/main.ts
+  45a964fa3eba07a9 2-3,9,14,23-24,27,29,68-110,117,121-136,139,153-155
+README.md
+  45a964fa3eba07a9 1,23-39,43-46,50-54,58-65
+tests/regressions.test.cjs
+  45a964fa3eba07a9 43-111,113,116-134,165,215,307-309,318-319,333,364,366,383,386-556
+AGENTS.md
+  45a964fa3eba07a9 15-16,18-19,24,38-40,42-43,45
+src/util.ts
+  45a964fa3eba07a9 5,10,16,19-21,91-106,112,155,176-191,220-233,236-238,281,286,298,300,303-305
+tests/distribution.test.cjs
+  45a964fa3eba07a9 1-36
+.github/workflows/releases.yml
+  45a964fa3eba07a9 23
+LICENSE
+  45a964fa3eba07a9 1-21
+HISTORY.md
+  45a964fa3eba07a9 8-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "af45af9777eec7c80e67f925855a87dc60d7cbf8",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 606,
+      "total_deletions": 158,
+      "accepted_lines": 538,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "LICENSE": {
+          "additions": 21,
+          "accepted_lines": 21
+        },
+        "tests/distribution.test.cjs": {
+          "additions": 36,
+          "accepted_lines": 36
+        },
+        ".github/workflows/releases.yml": {
+          "additions": 1,
+          "deletions": 19,
+          "accepted_lines": 1
+        },
+        "HISTORY.md": {
+          "additions": 21,
+          "deletions": 1,
+          "accepted_lines": 20
+        },
+        "README.md": {
+          "additions": 36,
+          "deletions": 14,
+          "accepted_lines": 36
+        },
+        "package.json": {
+          "additions": 2,
+          "deletions": 2,
+          "accepted_lines": 1
+        },
+        "AGENTS.md": {
+          "additions": 11,
+          "deletions": 2,
+          "accepted_lines": 11
+        },
+        "src/util.ts": {
+          "additions": 86,
+          "deletions": 37,
+          "accepted_lines": 66
+        },
+        "src/main.ts": {
+          "additions": 76,
+          "deletions": 26,
+          "accepted_lines": 73
+        },
+        "tests/regressions.test.cjs": {
+          "additions": 314,
+          "deletions": 55,
+          "accepted_lines": 271
+        },
+        "manifest.json": {
+          "additions": 2,
+          "deletions": 2,
+          "accepted_lines": 2
+        }
+      }
+    }
+  }
+}
