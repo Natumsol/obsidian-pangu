@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   build:
@@ -25,6 +27,12 @@ jobs:
           npm test
           node -e 'const p = require("./package.json"); const m = require("./manifest.json"); if (p.version !== m.version || m.version !== process.env.GITHUB_REF_NAME) throw new Error("Release version mismatch");'
           npm run build --if-present
+      - name: Attest release assets
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: |
+            dist/main.js
+            manifest.json
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

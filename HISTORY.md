@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.3](https://github.com/Natumsol/obsidian-pangu/compare/1.7.2...1.7.3) - 2026-09-21
+
+### Maintenance
+
+- Generate GitHub build provenance attestations for `main.js` and `manifest.json` before publishing, using a commit-pinned official action.
+- Add regression coverage for attestation permissions, release asset coverage, and build/attest/publish ordering.
+- Preserve plugin behavior and the minimum supported Obsidian version of 0.12.16.
+
 ## [1.7.2](https://github.com/Natumsol/obsidian-pangu/compare/1.7.0...1.7.2) - 2026-09-21
 
 ### Fixed
