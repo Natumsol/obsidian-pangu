@@ -1,0 +1,64 @@
+AGENTS.md
+  45a964fa3eba07a9 26,31-37
+manifest.json
+  45a964fa3eba07a9 4,10
+HISTORY.md
+  45a964fa3eba07a9 8-23
+package.json
+  45a964fa3eba07a9 3
+.github/workflows/releases.yml
+  45a964fa3eba07a9 11-13,18,20,22,27-28,34
+rollup.config.js
+  45a964fa3eba07a9 14-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "fba917b5e46064335e509db8a7c23a29dbab45c0",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 43,
+      "total_deletions": 10,
+      "accepted_lines": 43,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        ".github/workflows/releases.yml": {
+          "additions": 9,
+          "deletions": 4,
+          "accepted_lines": 9
+        },
+        "rollup.config.js": {
+          "additions": 5,
+          "deletions": 1,
+          "accepted_lines": 5
+        },
+        "manifest.json": {
+          "additions": 2,
+          "deletions": 2,
+          "accepted_lines": 2
+        },
+        "HISTORY.md": {
+          "additions": 16,
+          "accepted_lines": 16
+        },
+        "package.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "AGENTS.md": {
+          "additions": 10,
+          "deletions": 2,
+          "accepted_lines": 10
+        }
+      }
+    }
+  }
+}
