@@ -26,7 +26,9 @@ Obsidian Pangu 为 Markdown 正文补充中英文间距，同时保护笔记语�
 ## Validation
 
 - 修复 Bug 时先加入能复现问题的回归测试，再修改实现。
-- `npm test`：运行回归测试，需要 Node.js 18 或更新版本。
+- 开发和发布统一使用 Node.js 22。
+- `npm test`：运行格式化、设置、分发和 API 兼容性回归测试。
+- `npm run lint`：运行官方 `obsidianmd/no-unsupported-api` 规则（不是全部市场审核规则）；必须在发布前通过，不得关闭规则掩盖最低版本不匹配。
 - `npm run build`：构建到 `dist/`。
 - Rollup 的 TypeScript 插件显式包含 `src/**/*.ts`，避免旧插件的默认扩展通配模式在新安装的匹配依赖下漏掉源码。
 - 完整类型检查为 `./node_modules/.bin/tsc --noEmit`。此前本机遇到父目录全局类型冲突及缺失的 CodeMirror 声明，复查时应根据实际输出判断。
@@ -36,6 +38,7 @@ Obsidian Pangu 为 Markdown 正文补充中英文间距，同时保护笔记语�
 ## Release
 
 - 展示名称使用官方登记的 `PanGu`，插件 ID 保持 `obsidian-pangu`；不得为改名新建插件 ID。
+- 从 1.7.1 起 `minAppVersion` 为 `0.12.16`；最低版本必须覆盖实际 API 及目录检查要求，更新时保留旧版设置页兼容路径。
 - `package.json` 声明 MIT，根目录必须保留完整 `LICENSE`；插件描述以英文句末标点结尾。
 - Obsidian API 开发依赖固定到不可变版本，不使用 `master` 压缩包；更新依赖后重新生成 `yarn.lock` 并验证冻结安装，不跳过完整性校验。
 - 发布前同步 `package.json`、`manifest.json` 和 `HISTORY.md`；标签使用不带 `v` 的版本号。

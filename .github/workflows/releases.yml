@@ -21,6 +21,7 @@ jobs:
         id: build
         run: |
           npx --yes --package=yarn@1.22.22 yarn install --frozen-lockfile --non-interactive
+          npm run lint
           npm test
           node -e 'const p = require("./package.json"); const m = require("./manifest.json"); if (p.version !== m.version || m.version !== process.env.GITHUB_REF_NAME) throw new Error("Release version mismatch");'
           npm run build --if-present

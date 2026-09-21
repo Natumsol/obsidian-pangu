@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.1](https://github.com/Natumsol/obsidian-pangu/compare/1.7.0...1.7.1) - 2026-09-21
+
+### Fixed
+
+- Raise the declared minimum Obsidian version from 0.9.12 to 0.12.16 to cover the API requirements reported by directory review. Keep the older settings-page fallback below Obsidian 1.13.
+
+### Maintenance
+
+- Run the official `obsidianmd/no-unsupported-api` rule before release builds; add regression coverage that rejects the former minimum version.
+- Pin lint tooling and a compatible TypeScript version. Formatting behavior is unchanged from 1.7.0.
+
 ## [1.7.0](https://github.com/Natumsol/obsidian-pangu/compare/1.6.3...1.7.0) - 2026-09-21
 
 ### Added
