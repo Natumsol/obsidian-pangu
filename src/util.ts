@@ -51,20 +51,64 @@ export function format(
   // Choose a prefix absent from the input, including code and frontmatter.
   let prefix = "PANGUTAG";
   while (content.includes(prefix)) prefix += "X";
-  const tags: string[] = [];
-  const processedContent = content.replace(
-    /#[\p{L}\p{M}\p{N}_\/-]+/gu,
-    (tag, offset: number) => {
-      if (excluded.some(([start, end]) => offset >= start && offset < end))
-        return tag;
-      let escapes = 0;
-      for (let i = offset - 1; i >= 0 && content[i] === "\\"; i--) escapes++;
-      if (escapes % 2) return tag;
-      const token = `${prefix}${tags.length}X`;
-      tags.push(tag);
-      return `#${token}`;
+  const replacements: Array<{ start: number; end: number; value: string }> = [];
+  const displayMath: string[] = [];
+  // Prettier does not recognize same-line $$ math with delimiter-adjacent
+  // spaces. Mask these ranges before parsing so Markdown cannot alter them.
+  // Already-recognized math, code, links and metadata remain on their own path.
+  const displayPattern = /\$\$/g;
+  let match: RegExpExecArray | null;
+  let opening = -1;
+  while ((match = displayPattern.exec(content)) !== null) {
+    const offset = match.index;
+    if (opening >= 0 && /[\r\n]/.test(content.slice(opening, offset)))
+      opening = -1;
+    if (
+      isEscaped(content, offset) ||
+      content[offset - 1] === "$" ||
+      content[offset + 2] === "$"
+    )
+      continue;
+    if (opening < 0) {
+      if (!excluded.some(([from, to]) => offset >= from && offset < to))
+        opening = offset;
+      continue;
     }
-  );
+    const start = opening;
+    const end = offset + 2;
+    const token = `$$${prefix}MATH${displayMath.length}X$$`;
+    displayMath.push(content.slice(start, end));
+    replacements.push({ start, end, value: token });
+    excluded.push([start, end]);
+    opening = -1;
+  }
+
+  const tags: string[] = [];
+  // So includes emoji and symbols; marks, modifiers, ZWJ and tag characters
+  // keep multi-code-point emoji sequences intact without consuming punctuation.
+  const tagPattern =
+    /#[\p{L}\p{M}\p{N}\p{So}\p{Emoji_Modifier}\u200d\u{e0020}-\u{e007f}_\/-]+/gu;
+  while ((match = tagPattern.exec(content)) !== null) {
+    const start = match.index;
+    if (
+      excluded.some(([from, to]) => start >= from && start < to) ||
+      isEscaped(content, start)
+    )
+      continue;
+    replacements.push({
+      start,
+      end: start + match[0].length,
+      value: `#${prefix}${tags.length}X`,
+    });
+    tags.push(match[0]);
+  }
+  let processedContent = content;
+  replacements
+    .sort((a, b) => b.start - a.start)
+    .forEach(({ start, end, value }) => {
+      processedContent =
+        processedContent.slice(0, start) + value + processedContent.slice(end);
+    });
 
   const protectedParser = {
     ...parser,
@@ -116,10 +160,21 @@ export function format(
     ...parseOptions(options),
   });
 
-  return formatted.replace(
-    new RegExp(`#${prefix}(\\d+)X`, "g"),
-    (_match: string, index: string) => tags[+index]
-  );
+  return formatted
+    .replace(
+      new RegExp(`#${prefix}(\\d+)X`, "g"),
+      (_match: string, index: string) => tags[+index]
+    )
+    .replace(
+      new RegExp(`\\$\\$${prefix}MATH(\\d+)X\\$\\$`, "g"),
+      (_match: string, index: string) => displayMath[+index]
+    );
+}
+
+function isEscaped(text: string, offset: number): boolean {
+  let escapes = 0;
+  for (let i = offset - 1; i >= 0 && text[i] === "\\"; i--) escapes++;
+  return escapes % 2 === 1;
 }
 
 function containsList(node: MarkdownNode): boolean {

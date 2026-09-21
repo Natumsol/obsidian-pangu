@@ -48,6 +48,18 @@ for (const input of [
   "前$x_1+y_2$后\n",
   "前$x_1  + y_2$后\n",
   "$$x_1  + y_2$$\n",
+  "$$ a_{1} + b_{2} $$\n",
+  "$$  a_{1}  + b_{2}  $$\n",
+  "前$$ a_{1} + b_{2} $$后\n",
+  "> $$ a_{1} + b_{2} $$\n",
+  "- $$ 中文English + a_{1} + b_{2} $$\n",
+  "$$ a_{1} $$ 和 $$ b_{2} $$\n",
+  "$$ \\text{#中文😀English} + a_{1} + b_{2} $$\n",
+  "$$ \\text{\\$$} + a_{1} + b_{2} $$\n",
+  "\\$$ literal 和 $$ a_{1} + b_{2} $$\n",
+  "$$a_1$$ 和 $$ b_{2} + c_{3} $$\n",
+  "`$$ a_{1} + b_{2} $$`\n",
+  "```text\n$$ a_{1} + b_{2} $$\n```\n",
   "$$\nx_1  + y_2\n\n  z_3 = 4\n$$\n",
   "行内$x_1  + y_2$和$z_3$。\n\n$$\nx_1  + y_2 = z_3\n$$\n\n后续$a_1$。\n",
   "> $$\n>  x_1+y_2\n> $$\n",
@@ -69,6 +81,37 @@ test("#31: tags remain intact while ordinary prose receives spaces", () => {
     format("#中文English标签 #项目/sub项目 #my_tag_x 中文English"),
     "#中文English标签 #项目/sub项目 #my_tag_x 中文 English\n"
   );
+});
+
+for (const tag of [
+  "#😀中文English",
+  "#中文😀English标签",
+  "#中文👩🏽‍💻English标签",
+  "#中文🇨🇳English标签",
+  "#中文❤️English标签",
+  "#中文1️⃣English标签",
+  "#中文©English标签/子项Test",
+]) {
+  test(`Unicode tag stays intact: ${tag}`, () => {
+    for (const prefix of ["", "- ", "> "]) {
+      const input = `${prefix}${tag} 中文English\n`;
+      const expected = `${prefix}${tag} 中文 English\n`;
+      assert.equal(format(input), expected);
+      assert.equal(format(expected), expected);
+    }
+  });
+}
+
+test("emoji tags stop at Markdown and formula delimiters", () => {
+  const input = "**#中文😀English** $x_1$ 和 $$ a_{1} + b_{2} $$\n";
+  assert.equal(format(input), input);
+  assert.equal(format(format(input)), input);
+});
+
+test("math placeholders cannot collide with literal text", () => {
+  const input = "PANGUTAGMATH0X #中文😀English $$ a_{1} + b_{2} $$\n";
+  assert.equal(format(input), input);
+  assert.equal(format(format(input)), input);
 });
 
 test("tag protection respects Markdown contexts and literal placeholder-like text", () => {

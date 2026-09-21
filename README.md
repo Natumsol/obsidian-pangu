@@ -9,11 +9,11 @@ A small plugin aims to add space between Chinese Characters and English Alphabet
 
 ## Formatting behavior
 
-Obsidian tags such as `#中文English` are preserved while ordinary prose receives
-Chinese/English spacing. Both inline math (`$...$`) and display math (`$$...$$`,
-on one or multiple lines) are always preserved, including
-subscripts, delimiters, and whitespace within formulas. Code spans and fenced
-code blocks are not treated as math or tags.
+Obsidian tags such as `#中文English` and `#中文👩🏽‍💻English` are preserved while
+ordinary prose receives Chinese/English spacing. Both inline math (`$...$`) and
+display math (`$$...$$`, on one or multiple lines) are always preserved, including
+subscripts, delimiters, and whitespace within formulas (also directly inside
+`$$` delimiters). Code spans and fenced code blocks are not treated as math or tags.
 
 Lists retain their original tabs, spaces, markers, numbering, and line breaks,
 including nested task lists and lists inside blockquotes. Only prose inside lists
