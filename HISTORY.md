@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [2.0.0](https://github.com/Natumsol/obsidian-pangu/compare/1.7.3...2.0.0) - 2026-09-22
+
 ### Changed
 
 - Raise the minimum supported Obsidian version to 1.0.3, matching the oldest version supported by the application E2E runner, and remove the pre-0.13 editor fallback.
+- Rewrite the README with user-first installation, usage, settings and formatting guidance, with separate English and Simplified Chinese versions.
 
 ### Added
 

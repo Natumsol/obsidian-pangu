@@ -1,113 +1,127 @@
-## PanGu for Obsidian
+# PanGu for Obsidian
 
-A small plugin aims to add space between Chinese Characters and English Alphabet, and it is a boon for typographically compulsive people. For Example:
+English | [简体中文](README.zh-CN.md)
+
+PanGu is an Obsidian formatting plugin that adds spacing between Chinese text and English letters or numbers while preserving Markdown structure, code, and formulas.
 
 ```diff
 - 大多数人在20到30岁就已经过完自己的一生；一过了这个年龄段，他们就变成自己的影子。
 + 大多数人在 20 到 30 岁就已经过完自己的一生；一过了这个年龄段，他们就变成自己的影子。
 ```
 
-## Formatting behavior
+## Highlights
 
-Obsidian tags such as `#中文English` and `#中文👩🏽‍💻English` are preserved while
-ordinary prose receives Chinese/English spacing. Both inline math (`$...$`) and
-display math (`$$...$$`, on one or multiple lines) are always preserved, including
-subscripts, delimiters, and whitespace within formulas (also directly inside
-`$$` delimiters). Code spans and fenced code blocks are not treated as math or tags.
+- Adds spacing between Chinese text and English letters or numbers.
+- Supports inline and display math without rewriting formula content.
+- Protects tags, link destinations, inline code, code blocks, and list structure.
+- Adds spacing only by default, with full Markdown formatting available as an option.
+- Preserves selections and scroll position through local editor changes, with each formatting operation grouped into a single undo step.
+- Offers optional spacing as you type, including support for Chinese IME composition.
 
-Lists retain their original tabs, spaces, markers, numbering, and line breaks,
-including nested task lists and lists inside blockquotes. Only prose inside lists
-receives Chinese/English spacing; formulas and code remain untouched. Indented
-code blocks also keep their original indentation.
+## Installation
 
-The default **spacing-only** mode preserves Markdown layout: leading, internal,
-and trailing blank lines, whitespace on blank lines, line endings, and whether
-the document ends in a newline. It only adds spacing to prose and never formats
-code blocks. Existing installations without a saved mode use this default too.
+### Install from Obsidian
 
-Inline code and inline math receive exterior spaces when directly adjacent to
-letters or numbers (for example, `这是一个$c^2$公式` becomes `这是一个 $c^2$ 公式`).
-Their delimiters and internal content remain literal; existing whitespace and
-adjacent punctuation are not changed. Display math does not receive this spacing.
+In Obsidian, open **Settings → Community plugins → Browse**, search for `PanGu`, and install it. If the plugin does not appear in the search results yet, use the manual installation steps below.
 
-Choose **完整 Markdown 排版** in the **格式化模式** setting to retain the previous
-full-formatting behavior, including normalization of blank lines outside lists
-and a final newline. The indentation and embedded-code settings apply only in
-this mode. Lists, formulas, and inline code remain protected in both modes;
-formula protection cannot be disabled. All settings are saved across restarts.
-On Obsidian 1.13 and later, these controls also appear in settings search; older
-versions keep the existing settings page.
+PanGu requires Obsidian 1.0.3 or later and supports desktop only.
 
-ASCII punctuation (`. , ! ? : ;`) directly before Chinese prose receives a
-following space, for example `It works.可以` → `It works. 可以`. Chinese
-punctuation, link destinations, code and formulas remain unchanged.
+### Manual installation
 
-Formatting uses local editor changes instead of resetting the whole document.
-It maps selections, restores the scroll position and groups the changes into one
-undo transaction; unchanged documents are not written.
+1. Download `main.js` and `manifest.json` for the same version from [GitHub Releases](https://github.com/natumsol/obsidian-pangu/releases).
+2. Place both files in `<vault>/.obsidian/plugins/obsidian-pangu/`.
+3. Reload Obsidian, then enable PanGu under **Community plugins**.
 
-**输入时自动补空格** is a separate opt-in setting, disabled by default. It adds
-spaces only at Chinese/English-letter-or-number boundaries touched by newly
-typed text, after IME composition is committed. It never runs full Markdown
-formatting, even when that mode is selected for the manual command. Paste,
-deletion, undo/redo, replacement selections and multiple cursors are skipped.
-Code, formulas, tags and link targets stay protected. Unfinished Markdown is
-handled conservatively; finish the markup and use the manual command if needed.
-Automatic spacing is skipped in notes over 10,000 UTF-16 code units to avoid
-parsing large documents on each input; manual formatting remains available.
-
-### Editor acceptance checks
-
-Before releasing changes to editor integration, verify in a disposable vault in
-both Source mode and Live Preview: format a note with folded/nested headings,
-check folds and selection direction, then undo. Enable automatic spacing and
-type both `中文English` and `English中文` using a real Chinese IME. Check that
-composition is not interrupted, paste/delete/undo do not reinsert spaces, and
-switching files, pop-out windows or disabling/unloading the plugin leaves no
-pending changes. Host-mock tests do not replace these application checks.
-
-## Development
-
-Install dependencies with Yarn Classic 1.22.22: `yarn install --frozen-lockfile`.
-The Obsidian API dependency uses a fixed registry version, not a changing GitHub
-branch archive; commit `yarn.lock` whenever dependencies change.
-
-Use Node.js 22 for development. Run `npm run lint` for the official Obsidian API
-compatibility rule, `npm test` for regression tests, and `npm run build` to
-generate the plugin in `dist/`. This lint command checks API compatibility only,
-not every community-directory rule.
-
-Run `npm run test:e2e` for the isolated desktop acceptance suite. It builds and
-stages the plugin, downloads the pinned Obsidian 1.13.7 app with installer 1.12.4,
-then verifies loading, the real formatting shortcut, editor input and settings
-persistence. Downloads are cached in `.obsidian-cache/`; failure screenshots and
-runner logs are written to `e2e-results/`. The release workflow also runs the
-same suite against the minimum supported app with
-`OBSIDIAN_VERSIONS='1.13.7/1.12.4 1.0.3/earliest'`.
-
-The next PanGu release requires Obsidian 1.0.3 or later. This is also the oldest
-version covered by the automated application tests; declarative settings
-still activate only on Obsidian 1.13 and later.
+Keep your existing `data.json` when updating so that your settings are preserved.
 
 ## Usage
 
-Run **为中英文字符间自动加入空格** from the command palette, or use the default
-shortcut: **Command + Shift + S** on macOS, **Ctrl + Shift + S** on Windows/Linux.
-The previous **Ctrl + Shift + S** binding is also retained on macOS. If a shortcut
-conflicts with another command, change it in Obsidian's hotkey settings. Existing
-user-assigned shortcuts are not removed.
+Open the command palette and run **为中英文字符间自动加入空格**, or use the default shortcut:
 
-## Manual installation
+- macOS: `Command + Shift + S`
+- Windows / Linux: `Ctrl + Shift + S`
 
-Download `main.js` and `manifest.json` from the same version on the
-[GitHub releases page](https://github.com/natumsol/obsidian-pangu/releases).
-Place both files in `<vault>/.obsidian/plugins/obsidian-pangu/`, then reload
-Obsidian and enable PanGu. When updating, keep your existing `data.json` settings.
+For backward compatibility, `Ctrl + Shift + S` is also retained on macOS. If a shortcut conflicts with another command, change it in Obsidian's **Hotkeys** settings. PanGu does not remove shortcuts assigned by the user.
 
-New releases upload only supported plugin files rather than an additional ZIP.
-GitHub publication does not guarantee availability in the community directory;
-the listing must also pass Obsidian's checks.
+## Settings
 
-### Thanks
+| Setting | Default | Description |
+| --- | --- | --- |
+| Formatting mode | Spacing only | Handles Chinese/English/number boundaries without reformatting Markdown layout. |
+| Indentation width | `2` | Used only by full Markdown formatting. |
+| Format embedded languages | Off | Used only by full Markdown formatting. |
+| Add spacing as you type | Off | Handles only boundaries touched by newly typed text. |
 
-Thanks to [pangu.vim](https://github.com/hotoo/pangu.vim), [writing4cn](https://marketplace.visualstudio.com/items?itemName=twocucao.writing4cn) and [pangu-markdown-vscode ](https://github.com/zhuyuanxiang/pangu-markdown-vscode)
+Formula protection is always enabled and does not require a separate setting.
+
+## Formatting rules
+
+### Default: spacing only
+
+The default mode changes only the prose boundaries that need spacing. It does not intentionally reformat blank lines, indentation, list markers, or the final newline. File line endings may still be affected by Obsidian's own save behavior.
+
+The following content is preserved:
+
+- Obsidian tags such as `#中文English` and `#中文👩🏽‍💻English`
+- Inline math `$...$` and single-line or multiline display math `$$...$$`
+- Inline code, fenced code blocks, and indented code blocks
+- Markdown link destinations
+- List markers, numbering, indentation, and line breaks
+
+When inline code or inline math touches text or numbers directly, PanGu adds exterior spacing without changing the content inside. For example:
+
+```diff
+- 这是一个$c^2$公式
++ 这是一个 $c^2$ 公式
+```
+
+Display math does not receive exterior spacing. PanGu also adds a space when ASCII punctuation (`. , ! ? : ;`) is followed directly by Chinese text, so `It works.可以` becomes `It works. 可以`.
+
+### Full Markdown formatting
+
+This mode retains the previous full-formatting behavior. It additionally normalizes blank lines outside lists and ensures that the document ends with a newline. **Indentation width** and **Format embedded languages** apply only in this mode.
+
+Tags, code, link destinations, and formulas remain protected in both modes.
+
+## Spacing as you type
+
+When enabled, PanGu adds spaces at Chinese/English/number boundaries touched by newly typed text. It waits for Chinese IME composition to finish before processing. This feature always uses local spacing logic and never triggers full Markdown formatting.
+
+To avoid disrupting editing, automatic spacing skips:
+
+- Paste, deletion, undo, and redo
+- Selection replacement and multiple cursors
+- Unclosed Markdown structures
+- Notes longer than 10,000 UTF-16 code units
+
+Large notes can still be formatted manually from the command palette.
+
+## Development
+
+Development uses Node.js 22 and Yarn Classic 1.22.22:
+
+```bash
+yarn install --frozen-lockfile
+```
+
+Common commands:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Watch the source and rebuild continuously. |
+| `npm run lint` | Run ESLint and Obsidian API compatibility checks. |
+| `npm test` | Run unit and regression tests. |
+| `npm run build` | Build the plugin into `dist/`. |
+| `npm run test:e2e` | Build and run the E2E suite in the real Obsidian desktop app. |
+
+By default, E2E tests use Obsidian 1.13.7 with installer 1.12.4. Before a release, run the matrix for both the current and minimum supported versions:
+
+```bash
+OBSIDIAN_VERSIONS='1.13.7/1.12.4 1.0.3/earliest' npm run test:e2e
+```
+
+Downloaded Obsidian builds are cached in `.obsidian-cache/`. Failure screenshots and runner logs are written to `e2e-results/`. See the [E2E engineering research](docs/research/obsidian-e2e.md) and [latest acceptance report](docs/acceptance-2026-09-22.md) for background and release criteria.
+
+## Acknowledgements
+
+Thanks to [pangu.vim](https://github.com/hotoo/pangu.vim), [writing4cn](https://marketplace.visualstudio.com/items?itemName=twocucao.writing4cn), and [pangu-markdown-vscode](https://github.com/zhuyuanxiang/pangu-markdown-vscode).
