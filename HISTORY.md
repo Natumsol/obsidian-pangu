@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- Raise the minimum supported Obsidian version to 1.0.3, matching the oldest version supported by the application E2E runner, and remove the pre-0.13 editor fallback.
+
 ### Added
 
 - Add opt-in automatic Chinese/English spacing after committed typing, with IME, protected-Markdown and editor-lifecycle guards (#32).
 - Add spaces after ASCII sentence punctuation immediately before Chinese prose (#44).
+- Add isolated WebdriverIO E2E coverage for plugin loading, shortcuts, editor input and settings persistence on the pinned modern and minimum-supported Obsidian clients, with PR and release gates.
 
 ### Fixed
 

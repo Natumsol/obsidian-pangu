@@ -403,7 +403,11 @@ test("#35: settings survive reload and formatting receives saved tab width", asy
   }).default;
   const first = new Pangu();
   await first.onload();
-  assert.equal(first.command.hotkeys, undefined);
+  assert.equal(first.command.id, "pangu-format");
+  assert.deepEqual(JSON.parse(JSON.stringify(first.command.hotkeys ?? [])), [
+    { modifiers: ["Mod", "Shift"], key: "s" },
+    { modifiers: ["Ctrl", "Shift"], key: "s" },
+  ]);
   first.tab.display();
   await controls.find((control) => control.name === "缩进宽度").change("4");
   const second = new Pangu();

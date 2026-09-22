@@ -11,7 +11,9 @@ export default class Pangu extends Plugin {
 
   format(editor: Editor): void {
     const before = editor.getValue();
-    applyEdits(editor, textEdits(before, format(before, this.settings)));
+    // Obsidian unfolds edited ranges for ordinary user transactions. Its
+    // programmatic "set" origin preserves mapped folds without resetting text.
+    applyEdits(editor, textEdits(before, format(before, this.settings)), "set");
   }
 
   async onload() {
@@ -19,6 +21,10 @@ export default class Pangu extends Plugin {
       id: "pangu-format",
       name: "为中英文字符间自动加入空格",
       editorCallback: (editor) => this.format(editor),
+      hotkeys: [
+        { modifiers: ["Mod", "Shift"], key: "s" },
+        { modifiers: ["Ctrl", "Shift"], key: "s" },
+      ],
     });
     await this.loadSettings();
     this.addSettingTab(new PanguSettingTab(this.app, this));
@@ -74,7 +80,7 @@ class PanguSettingTab extends PluginSettingTab {
     return [
       {
         name: "快速开始",
-        desc: "在命令面板中运行「为中英文字符间自动加入空格」，或前往「设置 - 快捷键」自行绑定快捷键。",
+        desc: "默认快捷键：Mac 为 Command + Shift + S，Windows/Linux 为 Ctrl + Shift + S。也可从命令面板运行；如有冲突，请在「设置 - 快捷键」中修改。",
       },
       {
         name: "格式化模式",
@@ -127,7 +133,7 @@ class PanguSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("快速开始")
       .setDesc(
-        "在命令面板中运行「为中英文字符间自动加入空格」，或前往「设置 - 快捷键」自行绑定快捷键。"
+        "默认快捷键：Mac 为 Command + Shift + S，Windows/Linux 为 Ctrl + Shift + S。也可从命令面板运行；如有冲突，请在「设置 - 快捷键」中修改。"
       );
 
     new Setting(containerEl)

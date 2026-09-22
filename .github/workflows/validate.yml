@@ -1,0 +1,45 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      OBSIDIAN_VERSIONS: 1.13.7/1.12.4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: yarn
+      - name: Cache Obsidian test runtimes
+        uses: actions/cache@v4
+        with:
+          path: .obsidian-cache
+          key: obsidian-${{ runner.os }}-${{ runner.arch }}-1.13.7-1.12.4-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies
+        run: npx --yes --package=yarn@1.22.22 yarn install --frozen-lockfile --non-interactive
+      - name: Install desktop test dependencies
+        run: sudo apt-get update && sudo apt-get install --yes xvfb herbstluftwm
+      - name: Lint, unit test and build
+        run: |
+          npm run lint
+          npm test
+          npm run build
+      - name: End-to-end test
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1440x900x24" sh -c 'herbstluftwm & npm run test:e2e:run'
+      - name: Upload E2E failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results
+          path: e2e-results/
+          if-no-files-found: ignore

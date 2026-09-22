@@ -43,20 +43,24 @@ test("#4: already formatted notes do not mutate editor state", () => {
   assert.equal(editor.transactions.length, 0);
 });
 
-test("#32: automatic spacing is off unless explicitly enabled", () => {
-  assert.equal(loadSource("util").DEFAULT_SETTINGS.autoSpacing, false);
+test("#4: manual formatting uses a programmatic transaction to retain folds", () => {
+  const editor = makeEditor("# 标题Title\n\n正文English\n\n## 子标题\n\n内容Text");
+  const folds = new Set([0, 4]);
+  const transaction = editor.transaction;
+  editor.transaction = function (tx, origin) {
+    // Obsidian 1.13.7 unfolds changed folded ranges unless origin is "set".
+    // Local changes alone do not bypass that host transaction filter.
+    if (origin !== "set") folds.clear();
+    return transaction.call(this, tx);
+  };
+  new Pangu().format(editor);
+  assert.deepEqual([...folds], [0, 4]);
+  assert.equal(editor.transactions.length, 1);
+  assert.equal(editor.resets, 0);
 });
 
-test("#4: legacy editor uses local replacements without transaction or reset", () => {
-  const Legacy = loadSource("main", {
-    obsidian: { ...obsidian, requireApiVersion: () => false },
-  }).default;
-  const editor = makeEditor("甲A\n乙B");
-  editor.transaction = () =>
-    assert.fail("transaction is unavailable on 0.12.16");
-  new Legacy().format(editor);
-  assert.equal(editor.value, "甲 A\n乙 B");
-  assert.equal(editor.resets, 0);
+test("#32: automatic spacing is off unless explicitly enabled", () => {
+  assert.equal(loadSource("util").DEFAULT_SETTINGS.autoSpacing, false);
 });
 
 test("#4: full formatting preserves text, multi-selections and Unicode offsets", () => {
@@ -84,6 +88,17 @@ const { automaticEdits, bindAutomaticSpacing } = loadSource(
   { obsidian }
 );
 const { applyEdits } = loadSource("editing", { obsidian });
+
+test("#32: automatic edits keep their input origin, not the manual set origin", () => {
+  const editor = makeEditor("中文a");
+  const transaction = editor.transaction;
+  editor.transaction = function (tx, origin) {
+    assert.equal(origin, "+pangu");
+    return transaction.call(this, tx);
+  };
+  applyEdits(editor, automaticEdits("中文", editor.value, 2));
+  assert.equal(editor.value, "中文 a");
+});
 
 test("#32: only newly typed boundaries are spaced, not the rest of the note", () => {
   for (const [before, insert, expected] of [

@@ -10,3 +10,8 @@ package-lock.json
 main.js
 *.js.map
 dist
+
+# E2E downloads and generated evidence
+.e2e/
+.obsidian-cache/
+e2e-results/

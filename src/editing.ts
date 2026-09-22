@@ -1,5 +1,4 @@
 import type { Editor, EditorPosition } from "obsidian";
-import { requireApiVersion } from "obsidian";
 import diff from "fast-diff";
 
 export interface TextEdit {
@@ -57,7 +56,11 @@ function positionAt(text: string, offset: number): EditorPosition {
   return { line: lines.length - 1, ch: lines[lines.length - 1].length };
 }
 
-export function applyEdits(editor: Editor, edits: TextEdit[]): void {
+export function applyEdits(
+  editor: Editor,
+  edits: TextEdit[],
+  origin = "+pangu"
+): void {
   if (!edits.length) return;
   const before = editor.getValue();
   let after = before;
@@ -84,19 +87,12 @@ export function applyEdits(editor: Editor, edits: TextEdit[]): void {
     text: edit.text,
   }));
   const scroll = editor.getScrollInfo();
-  if (requireApiVersion("0.13.0")) {
-    editor.transaction(
-      {
-        changes,
-        selections: selections.map((s) => ({ from: s.anchor, to: s.head })),
-      },
-      "+pangu"
-    );
-  } else {
-    // Keep the advertised 0.12.16 minimum; its editor lacks transaction().
-    for (const change of [...changes].reverse())
-      editor.replaceRange(change.text, change.from, change.to, "+pangu");
-    editor.setSelections(selections);
-  }
+  editor.transaction(
+    {
+      changes,
+      selections: selections.map((s) => ({ from: s.anchor, to: s.head })),
+    },
+    origin
+  );
   editor.scrollTo(scroll.left, scroll.top);
 }

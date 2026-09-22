@@ -15,6 +15,10 @@ test("directory metadata uses the accepted name without changing plugin identity
   assert.equal(manifest.version, pkg.version);
 });
 
+test("minimum app version matches the supported E2E floor", () => {
+  assert.equal(JSON.parse(read("manifest.json")).minAppVersion, "1.0.3");
+});
+
 test("the declared MIT license has a repository license file", () => {
   assert.equal(JSON.parse(read("package.json")).license, "MIT");
   assert.match(read("LICENSE"), /MIT License/);
@@ -47,6 +51,12 @@ test("release attests every uploaded asset after building and before publishing"
   const attestIndex = steps.findIndex((step) => /uses: actions\/attest@/.test(step));
   const releaseIndex = steps.findIndex((step) => /uses: actions\/create-release@/.test(step));
   assert.ok(buildIndex >= 0 && attestIndex > buildIndex && releaseIndex > attestIndex);
+  const buildStep = steps[buildIndex];
+  assert.match(buildStep, /npm run test:e2e:run/);
+  assert.ok(
+    buildStep.indexOf("npm run build") < buildStep.indexOf("npm run test:e2e:run"),
+    "release E2E must exercise the staged release build"
+  );
 
   const attestation = steps[attestIndex];
   assert.match(attestation, /uses: actions\/attest@[a-f0-9]{40}\b/);

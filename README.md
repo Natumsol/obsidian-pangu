@@ -43,9 +43,8 @@ following space, for example `It works.可以` → `It works. 可以`. Chinese
 punctuation, link destinations, code and formulas remain unchanged.
 
 Formatting uses local editor changes instead of resetting the whole document.
-It maps selections and restores the scroll position; unchanged documents are not
-written. Obsidian 0.13+ groups the changes into one undo transaction, while
-0.12.16 uses the compatible range-editing fallback.
+It maps selections, restores the scroll position and groups the changes into one
+undo transaction; unchanged documents are not written.
 
 **输入时自动补空格** is a separate opt-in setting, disabled by default. It adds
 spaces only at Chinese/English-letter-or-number boundaries touched by newly
@@ -78,14 +77,24 @@ compatibility rule, `npm test` for regression tests, and `npm run build` to
 generate the plugin in `dist/`. This lint command checks API compatibility only,
 not every community-directory rule.
 
-PanGu 1.7.2 requires Obsidian 0.12.16 or later. The declared minimum covers the
-directory check's API requirements; declarative settings still activate only
-on Obsidian 1.13 and later.
+Run `npm run test:e2e` for the isolated desktop acceptance suite. It builds and
+stages the plugin, downloads the pinned Obsidian 1.13.7 app with installer 1.12.4,
+then verifies loading, the real formatting shortcut, editor input and settings
+persistence. Downloads are cached in `.obsidian-cache/`; failure screenshots and
+runner logs are written to `e2e-results/`. The release workflow also runs the
+same suite against the minimum supported app with
+`OBSIDIAN_VERSIONS='1.13.7/1.12.4 1.0.3/earliest'`.
+
+The next PanGu release requires Obsidian 1.0.3 or later. This is also the oldest
+version covered by the automated application tests; declarative settings
+still activate only on Obsidian 1.13 and later.
 
 ## Usage
 
-Run **为中英文字符间自动加入空格** from the command palette. No shortcut is assigned
-by default; bind your preferred shortcut in Obsidian's hotkey settings. Existing
+Run **为中英文字符间自动加入空格** from the command palette, or use the default
+shortcut: **Command + Shift + S** on macOS, **Ctrl + Shift + S** on Windows/Linux.
+The previous **Ctrl + Shift + S** binding is also retained on macOS. If a shortcut
+conflicts with another command, change it in Obsidian's hotkey settings. Existing
 user-assigned shortcuts are not removed.
 
 ## Manual installation
