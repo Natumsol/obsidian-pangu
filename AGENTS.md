@@ -5,6 +5,7 @@ Obsidian Pangu 为 Markdown 正文补充中英文间距，同时保护笔记语�
 ## Project map
 
 - `src/main.ts`：插件生命周期、编辑器命令、设置加载与保存。
+- `src/i18n.ts`：命令与设置界面的英文、简体中文翻译及 locale 回退。
 - `src/util.ts`：格式化、公式与标签保护、列表布局保留。
 - `tests/regressions.test.cjs`：格式化回归测试及 Obsidian 宿主模拟。
 - `README.md`：用户可见行为和开发说明。
@@ -27,6 +28,7 @@ Obsidian Pangu 为 Markdown 正文补充中英文间距，同时保护笔记语�
 - 手动格式化事务使用 Obsidian 的程序化更新来源 `set`，避免宿主自动展开被编辑的折叠内容；自动输入仍使用 `+pangu`。局部编辑不等于保留折叠，修改编辑入口后须在真实 Obsidian 中验收嵌套折叠与撤销/重做。
 - 输入时补空格默认关闭，只处理当前输入附近的中英文/数字边界，等 IME 提交后再写入；跳过粘贴、删除、撤销、选区替换、多光标及未闭合 Markdown。文件切换、失焦、关闭功能和卸载时不执行过期任务。自动输入不得格式化或 diff 全文；超过 10,000 UTF-16 单元的文档仅支持手动格式化，避免 Markdown 解析阻塞输入。
 - 设置页同时维护 `getSettingDefinitions()` 和 `display()`：前者用于 Obsidian 1.13+ 的设置搜索与自动绑定，后者兼容旧版；两者的名称、选项、默认值和保存行为须保持一致。
+- 命令与两套设置 UI 共用 `src/i18n.ts` 翻译目录；简体中文 locale 使用中文，其他 locale 回退英文。为兼容最低支持的 Obsidian 1.0.3，语言检测使用公开的 `moment.locale()`，不得改用 1.8.7 才提供的 `getLanguage()`。
 
 ## Validation
 

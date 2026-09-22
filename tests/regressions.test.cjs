@@ -392,6 +392,7 @@ test("#35: settings survive reload and formatting receives saved tab width", asy
       PluginSettingTab,
       Setting,
       requireApiVersion: () => true,
+      moment: { locale: () => "zh-cn" },
     },
     "./util": {
       ...util,
@@ -444,7 +445,11 @@ test("declarative settings expose all controls and persist through the host bind
     }
   }
   const Pangu = loadSource("main", {
-    obsidian: { Plugin, PluginSettingTab },
+    obsidian: {
+      Plugin,
+      PluginSettingTab,
+      moment: { locale: () => "zh-cn" },
+    },
     "./util": util,
   }).default;
   const first = new Pangu();
@@ -487,6 +492,159 @@ test("declarative settings expose all controls and persist through the host bind
   assert.equal(second.tab.getControlValue("tabWidth"), "2");
   assert.equal(second.tab.getControlValue("embeddedLanguageFormatting"), true);
   assert.equal(second.tab.getControlValue("autoSpacing"), true);
+});
+
+test("English Obsidian localizes the command and declarative settings", async () => {
+  class Plugin extends PluginStub {
+    async loadData() {
+      return undefined;
+    }
+    addCommand(command) {
+      this.command = command;
+    }
+    addSettingTab(tab) {
+      this.tab = tab;
+    }
+  }
+  class PluginSettingTab {}
+  const Pangu = loadSource("main", {
+    obsidian: {
+      Plugin,
+      PluginSettingTab,
+      moment: { locale: () => "en" },
+    },
+    "./util": util,
+  }).default;
+  const plugin = new Pangu();
+  await plugin.onload();
+
+  assert.equal(plugin.command.name, "Add spaces between Chinese and English");
+  const definitions = JSON.parse(
+    JSON.stringify(plugin.tab.getSettingDefinitions())
+  );
+  assert.deepEqual(
+    definitions.map(({ name }) => name),
+    [
+      "Quick start",
+      "Formatting mode",
+      "Indentation width",
+      "Format embedded code",
+      "Add spaces as you type",
+    ]
+  );
+  assert.deepEqual(definitions[1].control.options, {
+    spacing: "Spacing only (preserve layout)",
+    markdown: "Full Markdown formatting",
+  });
+});
+
+test("locale resolution supports Simplified Chinese and falls back to English", () => {
+  const { createTranslator } = loadSource("i18n", {
+    obsidian: { moment: { locale: () => "en" } },
+  });
+  for (const locale of ["zh", "zh-cn", "zh_CN", "zh-Hans", "zh-SG"]) {
+    assert.equal(
+      createTranslator(locale)("formatModeName"),
+      "格式化模式",
+      locale
+    );
+  }
+  for (const locale of ["en", "fr", "zh-tw"]) {
+    assert.equal(
+      createTranslator(locale)("formatModeName"),
+      "Formatting mode",
+      locale
+    );
+  }
+});
+
+test("legacy settings use the same English labels and options", async () => {
+  const settings = [];
+  class Plugin extends PluginStub {
+    async loadData() {
+      return undefined;
+    }
+    addCommand() {}
+    addSettingTab(tab) {
+      this.tab = tab;
+    }
+  }
+  class PluginSettingTab {
+    containerEl = { empty() {} };
+  }
+  class Setting {
+    constructor() {
+      settings.push(this);
+    }
+    setName(name) {
+      this.name = name;
+      return this;
+    }
+    setDesc(desc) {
+      this.desc = desc;
+      return this;
+    }
+    addDropdown(callback) {
+      const control = {
+        options: {},
+        addOption(key, label) {
+          this.options[key] = label;
+          return this;
+        },
+        setValue() {
+          return this;
+        },
+        onChange() {
+          return this;
+        },
+      };
+      callback(control);
+      this.options = control.options;
+      return this;
+    }
+    addToggle(callback) {
+      callback({
+        setValue() {
+          return this;
+        },
+        onChange() {
+          return this;
+        },
+      });
+      return this;
+    }
+  }
+  const Pangu = loadSource("main", {
+    obsidian: {
+      Plugin,
+      PluginSettingTab,
+      Setting,
+      moment: { locale: () => "en" },
+    },
+    "./util": util,
+  }).default;
+  const plugin = new Pangu();
+  await plugin.onload();
+  plugin.tab.display();
+
+  assert.deepEqual(
+    settings.map(({ name }) => name),
+    [
+      "Quick start",
+      "Formatting mode",
+      "Indentation width",
+      "Format embedded code",
+      "Add spaces as you type",
+    ]
+  );
+  assert.deepEqual(settings[1].options, {
+    spacing: "Spacing only (preserve layout)",
+    markdown: "Full Markdown formatting",
+  });
+  assert.deepEqual(settings[2].options, {
+    2: "2 spaces",
+    4: "4 spaces",
+  });
 });
 
 test("editor uses spacing for old settings and persists the selected formatting mode", async () => {
@@ -548,6 +706,7 @@ test("editor uses spacing for old settings and persists the selected formatting 
       PluginSettingTab,
       Setting,
       requireApiVersion: () => true,
+      moment: { locale: () => "zh-cn" },
     },
     "./util": util,
   }).default;

@@ -3,6 +3,8 @@ import type { Editor, SettingDefinitionItem } from "obsidian";
 import { DEFAULT_SETTINGS, format, IPanGuSetting } from "./util";
 import { applyEdits, textEdits } from "./editing";
 import { bindAutomaticSpacing } from "./automatic-spacing";
+import { createTranslator } from "./i18n";
+import type { Translator } from "./i18n";
 
 export default class Pangu extends Plugin {
   settings: IPanGuSetting = DEFAULT_SETTINGS;
@@ -17,9 +19,10 @@ export default class Pangu extends Plugin {
   }
 
   async onload() {
+    const t = createTranslator();
     this.addCommand({
       id: "pangu-format",
-      name: "为中英文字符间自动加入空格",
+      name: t("commandFormat"),
       editorCallback: (editor) => this.format(editor),
       hotkeys: [
         { modifiers: ["Mod", "Shift"], key: "s" },
@@ -27,7 +30,7 @@ export default class Pangu extends Plugin {
       ],
     });
     await this.loadSettings();
-    this.addSettingTab(new PanguSettingTab(this.app, this));
+    this.addSettingTab(new PanguSettingTab(this.app, this, t));
     const syncEditors = () => {
       if (this.stopped) return;
       const views = new Set<MarkdownView>();
@@ -69,45 +72,47 @@ export default class Pangu extends Plugin {
 
 class PanguSettingTab extends PluginSettingTab {
   plugin: Pangu;
+  private t: Translator;
 
-  constructor(app: App, plugin: Pangu) {
+  constructor(app: App, plugin: Pangu, t: Translator) {
     super(app, plugin);
     this.plugin = plugin;
+    this.t = t;
   }
 
   // Obsidian 1.13+ uses these searchable, automatically persisted controls.
   getSettingDefinitions(): SettingDefinitionItem<keyof IPanGuSetting>[] {
     return [
       {
-        name: "快速开始",
-        desc: "默认快捷键：Mac 为 Command + Shift + S，Windows/Linux 为 Ctrl + Shift + S。也可从命令面板运行；如有冲突，请在「设置 - 快捷键」中修改。",
+        name: this.t("quickStartName"),
+        desc: this.t("quickStartDesc"),
       },
       {
-        name: "格式化模式",
-        desc: "默认只补空格，保留空行和 Markdown 布局；完整排版会规范化其他 Markdown 布局。两种模式都保护公式原文",
+        name: this.t("formatModeName"),
+        desc: this.t("formatModeDesc"),
         control: {
           type: "dropdown",
           key: "formatMode",
           defaultValue: DEFAULT_SETTINGS.formatMode,
           options: {
-            spacing: "只补空格（保留布局）",
-            markdown: "完整 Markdown 排版",
+            spacing: this.t("formatModeSpacing"),
+            markdown: this.t("formatModeMarkdown"),
           },
         },
       },
       {
-        name: "缩进宽度",
-        desc: "仅完整排版模式生效；列表始终保留原有的 Tab 和空格缩进",
+        name: this.t("tabWidthName"),
+        desc: this.t("tabWidthDesc"),
         control: {
           type: "dropdown",
           key: "tabWidth",
           defaultValue: DEFAULT_SETTINGS.tabWidth,
-          options: { "2": "2个空格", "4": "4个空格" },
+          options: { "2": this.t("tabWidth2"), "4": this.t("tabWidth4") },
         },
       },
       {
-        name: "格式化内嵌代码",
-        desc: "仅完整排版模式生效；只补空格模式不修改代码。行内代码始终保留原文",
+        name: this.t("embeddedCodeName"),
+        desc: this.t("embeddedCodeDesc"),
         control: {
           type: "toggle",
           key: "embeddedLanguageFormatting",
@@ -115,8 +120,8 @@ class PanguSettingTab extends PluginSettingTab {
         },
       },
       {
-        name: "输入时自动补空格",
-        desc: "默认关闭；仅在输入确认后补充附近的中英文间距，不处理粘贴、删除或撤销。超过 10,000 UTF-16 单元的笔记请手动格式化",
+        name: this.t("autoSpacingName"),
+        desc: this.t("autoSpacingDesc"),
         control: {
           type: "toggle",
           key: "autoSpacing",
@@ -131,20 +136,16 @@ class PanguSettingTab extends PluginSettingTab {
     let { containerEl } = this;
     containerEl.empty();
     new Setting(containerEl)
-      .setName("快速开始")
-      .setDesc(
-        "默认快捷键：Mac 为 Command + Shift + S，Windows/Linux 为 Ctrl + Shift + S。也可从命令面板运行；如有冲突，请在「设置 - 快捷键」中修改。"
-      );
+      .setName(this.t("quickStartName"))
+      .setDesc(this.t("quickStartDesc"));
 
     new Setting(containerEl)
-      .setName("格式化模式")
-      .setDesc(
-        "默认只补空格，保留空行和 Markdown 布局；完整排版会规范化其他 Markdown 布局。两种模式都保护公式原文"
-      )
+      .setName(this.t("formatModeName"))
+      .setDesc(this.t("formatModeDesc"))
       .addDropdown((dropdown) => {
         dropdown
-          .addOption("spacing", "只补空格（保留布局）")
-          .addOption("markdown", "完整 Markdown 排版")
+          .addOption("spacing", this.t("formatModeSpacing"))
+          .addOption("markdown", this.t("formatModeMarkdown"))
           .setValue(this.plugin.settings.formatMode || "spacing")
           .onChange(async (value) => {
             this.plugin.settings.formatMode =
@@ -154,12 +155,12 @@ class PanguSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName("缩进宽度")
-      .setDesc("仅完整排版模式生效；列表始终保留原有的 Tab 和空格缩进")
+      .setName(this.t("tabWidthName"))
+      .setDesc(this.t("tabWidthDesc"))
       .addDropdown((dropdown) => {
         dropdown
-          .addOption("2", "2个空格")
-          .addOption("4", "4个空格")
+          .addOption("2", this.t("tabWidth2"))
+          .addOption("4", this.t("tabWidth4"))
           .setValue(this.plugin.settings.tabWidth)
           .onChange(async (value) => {
             this.plugin.settings.tabWidth = value;
@@ -168,10 +169,8 @@ class PanguSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName("格式化内嵌代码")
-      .setDesc(
-        "仅完整排版模式生效；只补空格模式不修改代码。行内代码始终保留原文"
-      )
+      .setName(this.t("embeddedCodeName"))
+      .setDesc(this.t("embeddedCodeDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.embeddedLanguageFormatting)
@@ -181,10 +180,8 @@ class PanguSettingTab extends PluginSettingTab {
           })
       );
     new Setting(containerEl)
-      .setName("输入时自动补空格")
-      .setDesc(
-        "默认关闭；仅在输入确认后补充附近的中英文间距，不处理粘贴、删除或撤销。超过 10,000 UTF-16 单元的笔记请手动格式化"
-      )
+      .setName(this.t("autoSpacingName"))
+      .setDesc(this.t("autoSpacingDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.autoSpacing === true)

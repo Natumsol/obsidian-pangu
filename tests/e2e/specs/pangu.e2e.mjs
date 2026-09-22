@@ -9,6 +9,16 @@ const original =
 const expected =
   "# 折叠标题 Title\n\n折叠正文 English\n\n## 子标题 Subtitle\n\n子正文 Text\n\n# 展开标题 Title\n\n中文 English\n";
 
+function isSimplifiedChinese(locale) {
+  return ["zh", "zh-cn", "zh-hans", "zh-sg"].includes(
+    locale.toLowerCase().replaceAll("_", "-")
+  );
+}
+
+function localized(locale, english, chinese) {
+  return isSimplifiedChinese(locale) ? chinese : english;
+}
+
 async function resetSettings() {
   await browser.executeObsidian(async ({ plugins }) => {
     const plugin = plugins.obsidianPangu;
@@ -88,16 +98,27 @@ describe("PanGu in an isolated Obsidian client", function () {
   });
 
   it("loads the staged plugin and declared compatibility floor", async function () {
-    const state = await browser.executeObsidian(({ app, plugins }) => ({
+    const state = await browser.executeObsidian(({ app, obsidian, plugins }) => ({
       loaded: Boolean(plugins.obsidianPangu),
       command: Boolean(app.commands.commands["obsidian-pangu:pangu-format"]),
+      commandName:
+        app.commands.commands["obsidian-pangu:pangu-format"]?.name,
+      locale: obsidian.moment.locale(),
       minimum: app.plugins.manifests["obsidian-pangu"].minAppVersion,
     }));
-    assert.deepEqual(state, {
-      loaded: true,
-      command: true,
-      minimum: "1.0.3",
-    });
+    assert.equal(state.loaded, true);
+    assert.equal(state.command, true);
+    assert.equal(state.minimum, "1.0.3");
+    assert.equal(
+      state.commandName.endsWith(
+        localized(
+          state.locale,
+          "Add spaces between Chinese and English",
+          "为中英文字符间自动加入空格"
+        )
+      ),
+      true
+    );
   });
 
   it("formats through the real shortcut and preserves folds and undo", async function () {
@@ -154,6 +175,14 @@ describe("PanGu in an isolated Obsidian client", function () {
 
   it("persists the automatic spacing toggle through the real settings UI", async function () {
     const initialWindows = await browser.getWindowHandles();
+    const locale = await browser.executeObsidian(({ obsidian }) =>
+      obsidian.moment.locale()
+    );
+    const autoSpacingLabel = localized(
+      locale,
+      "Add spaces as you type",
+      "输入时自动补空格"
+    );
     let settingsWindow;
     try {
       await browser.executeObsidianCommand("app:open-settings");
@@ -184,10 +213,10 @@ describe("PanGu in an isolated Obsidian client", function () {
       assert.ok(pluginTab, "PanGu settings tab must be visible");
       await pluginTab.click();
       await browser.waitUntil(
-        async () => Boolean(await findSettingToggle("输入时自动补空格")),
+        async () => Boolean(await findSettingToggle(autoSpacingLabel)),
         { timeoutMsg: "PanGu settings controls did not render" }
       );
-      const toggle = await findSettingToggle("输入时自动补空格");
+      const toggle = await findSettingToggle(autoSpacingLabel);
       assert.ok(toggle, "automatic spacing setting must be visible");
       if ((await toggle.getAttribute("class")).includes("is-enabled")) {
         await toggle.click();

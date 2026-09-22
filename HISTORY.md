@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [2.0.1](https://github.com/Natumsol/obsidian-pangu/compare/2.0.0...2.0.1) - 2026-09-22
+
+### Added
+
+- Localize command and settings UI in English and Simplified Chinese according to the Obsidian locale, with English fallback and support for both legacy and declarative settings.
+
 ## [2.0.0](https://github.com/Natumsol/obsidian-pangu/compare/1.7.3...2.0.0) - 2026-09-22
 
 ### Changed

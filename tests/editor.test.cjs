@@ -6,6 +6,7 @@ const obsidian = {
   Plugin: PluginStub,
   PluginSettingTab: class {},
   requireApiVersion: () => true,
+  moment: { locale: () => "zh-cn" },
 };
 const Pangu = loadSource("main", { obsidian }).default;
 

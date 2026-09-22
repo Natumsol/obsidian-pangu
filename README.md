@@ -17,6 +17,7 @@ PanGu is an Obsidian formatting plugin that adds spacing between Chinese text an
 - Adds spacing only by default, with full Markdown formatting available as an option.
 - Preserves selections and scroll position through local editor changes, with each formatting operation grouped into a single undo step.
 - Offers optional spacing as you type, including support for Chinese IME composition.
+- Localizes commands and settings in English or Simplified Chinese based on Obsidian's language.
 
 ## Installation
 
@@ -36,7 +37,7 @@ Keep your existing `data.json` when updating so that your settings are preserved
 
 ## Usage
 
-Open the command palette and run **为中英文字符间自动加入空格**, or use the default shortcut:
+Open the command palette and run **Add spaces between Chinese and English** (shown as **为中英文字符间自动加入空格** in Simplified Chinese), or use the default shortcut:
 
 - macOS: `Command + Shift + S`
 - Windows / Linux: `Ctrl + Shift + S`
@@ -53,6 +54,8 @@ For backward compatibility, `Ctrl + Shift + S` is also retained on macOS. If a s
 | Add spacing as you type | Off | Handles only boundaries touched by newly typed text. |
 
 Formula protection is always enabled and does not require a separate setting.
+
+PanGu reads the Obsidian language when the plugin loads. Simplified Chinese locales use Chinese UI text; all other locales currently fall back to English. Reload PanGu after changing the Obsidian language.
 
 ## Formatting rules
 
