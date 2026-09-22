@@ -1,0 +1,43 @@
+HISTORY.md
+  45a964fa3eba07a9 10-11
+package.json
+  45a964fa3eba07a9 3
+manifest.json
+  45a964fa3eba07a9 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "9d59bdda0eed4959e67c650c9d2c65b24838cc4d",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 2,
+      "accepted_lines": 4,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "HISTORY.md": {
+          "additions": 2,
+          "accepted_lines": 2
+        },
+        "package.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "manifest.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        }
+      }
+    }
+  }
+}
