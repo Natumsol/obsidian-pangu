@@ -1,0 +1,97 @@
+tests/regressions.test.cjs
+  45a964fa3eba07a9 395,448-452,497-649,709
+src/i18n.ts
+  45a964fa3eba07a9 1-58
+AGENTS.md
+  45a964fa3eba07a9 8,31
+README.md
+  45a964fa3eba07a9 20,40,58
+README.zh-CN.md
+  45a964fa3eba07a9 20,40,58
+tests/e2e/specs/pangu.e2e.mjs
+  45a964fa3eba07a9 12-21,101,104-106,109-121,178-185,216,219
+src/main.ts
+  45a964fa3eba07a9 6-7,22,25,33,75,77,80,87-88,91-92,98-99,104-105,110,114-115,123-124,139-140,143-144,147-148,158-159,162-163,172-173,183-184
+tests/editor.test.cjs
+  45a964fa3eba07a9 9
+package.json
+  45a964fa3eba07a9 3
+manifest.json
+  45a964fa3eba07a9 4
+HISTORY.md
+  45a964fa3eba07a9 10-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "0bd7fb514f51be4d8ede583e77ae00e4a285c970",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 323,
+      "total_deletions": 65,
+      "accepted_lines": 309,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "src/main.ts": {
+          "additions": 36,
+          "deletions": 39,
+          "accepted_lines": 35
+        },
+        "package.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "HISTORY.md": {
+          "additions": 6,
+          "accepted_lines": 6
+        },
+        "tests/regressions.test.cjs": {
+          "additions": 160,
+          "deletions": 1,
+          "accepted_lines": 160
+        },
+        "README.md": {
+          "additions": 4,
+          "deletions": 1,
+          "accepted_lines": 4
+        },
+        "manifest.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "README.zh-CN.md": {
+          "additions": 4,
+          "deletions": 1,
+          "accepted_lines": 4
+        },
+        "tests/e2e/specs/pangu.e2e.mjs": {
+          "additions": 49,
+          "deletions": 20,
+          "accepted_lines": 37
+        },
+        "tests/editor.test.cjs": {
+          "additions": 1,
+          "accepted_lines": 1
+        },
+        "src/i18n.ts": {
+          "additions": 59,
+          "deletions": 1,
+          "accepted_lines": 58
+        },
+        "AGENTS.md": {
+          "additions": 2,
+          "accepted_lines": 2
+        }
+      }
+    }
+  }
+}
