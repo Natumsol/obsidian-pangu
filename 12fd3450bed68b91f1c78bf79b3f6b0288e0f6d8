@@ -1,0 +1,56 @@
+HISTORY.md
+  45a964fa3eba07a9 10-13
+scripts/release-notes.mjs
+  45a964fa3eba07a9 1-30
+tests/distribution.test.cjs
+  45a964fa3eba07a9 3,10-20,22-31,59,61-69,71-72
+.github/workflows/releases.yml
+  45a964fa3eba07a9 54-56,63
+AGENTS.md
+  45a964fa3eba07a9 55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "12fd3450bed68b91f1c78bf79b3f6b0288e0f6d8",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 75,
+      "total_deletions": 9,
+      "accepted_lines": 74,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "HISTORY.md": {
+          "additions": 4,
+          "accepted_lines": 4
+        },
+        "tests/distribution.test.cjs": {
+          "additions": 36,
+          "deletions": 6,
+          "accepted_lines": 35
+        },
+        "AGENTS.md": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "scripts/release-notes.mjs": {
+          "additions": 30,
+          "accepted_lines": 30
+        },
+        ".github/workflows/releases.yml": {
+          "additions": 4,
+          "deletions": 2,
+          "accepted_lines": 4
+        }
+      }
+    }
+  }
+}
