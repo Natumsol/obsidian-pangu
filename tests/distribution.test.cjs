@@ -1,10 +1,33 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
+const { execFileSync, spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
 const root = path.join(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
+
+test("release notes select only the requested changelog version", () => {
+  const notes = execFileSync(
+    process.execPath,
+    [path.join(root, "scripts/release-notes.mjs"), "2.0.2"],
+    { cwd: root, encoding: "utf8" }
+  );
+  assert.equal(
+    notes,
+    "### Fixed\n\n- Generate release notes automatically with GitHub CLI and remove the deprecated create-release and upload-release-asset actions.\n"
+  );
+});
+
+test("release notes fail when the requested version is missing", () => {
+  const result = spawnSync(
+    process.execPath,
+    [path.join(root, "scripts/release-notes.mjs"), "9.9.9"],
+    { cwd: root, encoding: "utf8" }
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /HISTORY\.md has no 9\.9\.9 release section/);
+});
 
 test("directory metadata uses the accepted name without changing plugin identity", () => {
   const manifest = JSON.parse(read("manifest.json"));
@@ -33,13 +56,20 @@ test("API dependency is pinned and the release uses the checked-in lockfile", ()
   assert.match(read(".github/workflows/releases.yml"), /--frozen-lockfile/);
 });
 
-test("release publishes supported plugin files with generated notes", () => {
+test("release publishes supported plugin files with changelog notes", () => {
   const workflow = read(".github/workflows/releases.yml");
-  const releaseStep = workflow
-    .split(/^      - /m)
-    .find((step) => step.includes("gh release create"));
+  const steps = workflow.split(/^      - /m).slice(1);
+  const notesIndex = steps.findIndex((step) =>
+    step.includes("scripts/release-notes.mjs")
+  );
+  const releaseIndex = steps.findIndex((step) =>
+    step.includes("gh release create")
+  );
+  const releaseStep = steps[releaseIndex];
+  assert.ok(notesIndex >= 0 && releaseIndex > notesIndex);
   assert.ok(releaseStep, "release must be created by GitHub CLI");
-  assert.match(releaseStep, /--generate-notes/);
+  assert.match(releaseStep, /--notes-file release-notes\.md/);
+  assert.doesNotMatch(releaseStep, /--generate-notes/);
   assert.match(releaseStep, /--verify-tag/);
   assert.match(releaseStep, /\bdist\/main\.js\b/);
   assert.match(releaseStep, /\bmanifest\.json\b/);

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Populate each GitHub Release from its matching `HISTORY.md` section so direct commits produce meaningful notes instead of only a comparison link.
+
 ## [2.0.2](https://github.com/Natumsol/obsidian-pangu/compare/2.0.1...2.0.2) - 2026-09-22
 
 ### Fixed

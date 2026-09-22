@@ -51,12 +51,14 @@ jobs:
           subject-path: |
             dist/main.js
             manifest.json
-      - name: Create release with generated notes
+      - name: Prepare release notes
+        run: node scripts/release-notes.mjs "$GITHUB_REF_NAME" > release-notes.md
+      - name: Create release with changelog notes
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
             dist/main.js \
             manifest.json \
-            --generate-notes \
+            --notes-file release-notes.md \
             --verify-tag
