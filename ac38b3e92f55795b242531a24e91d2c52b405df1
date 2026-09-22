@@ -1,0 +1,37 @@
+.github/workflows/releases.yml
+  45a964fa3eba07a9 17,19,24,43
+.github/workflows/validate.yml
+  45a964fa3eba07a9 18-19,24,41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "ac38b3e92f55795b242531a24e91d2c52b405df1",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 8,
+      "total_deletions": 8,
+      "accepted_lines": 8,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        ".github/workflows/releases.yml": {
+          "additions": 4,
+          "deletions": 4,
+          "accepted_lines": 4
+        },
+        ".github/workflows/validate.yml": {
+          "additions": 4,
+          "deletions": 4,
+          "accepted_lines": 4
+        }
+      }
+    }
+  }
+}
