@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Generate release notes automatically with GitHub CLI and remove the deprecated create-release and upload-release-asset actions.
+
 ## [2.0.1](https://github.com/Natumsol/obsidian-pangu/compare/2.0.0...2.0.1) - 2026-09-22
 
 ### Added

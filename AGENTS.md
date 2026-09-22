@@ -52,6 +52,7 @@ Obsidian Pangu 为 Markdown 正文补充中英文间距，同时保护笔记语�
 - Obsidian API 开发依赖固定到不可变版本，不使用 `master` 压缩包；更新依赖后重新生成 `yarn.lock` 并验证冻结安装，不跳过完整性校验。
 - 发布前同步 `package.json`、`manifest.json` 和 `HISTORY.md`；标签使用不带 `v` 的版本号。
 - 推送版本标签会触发 `.github/workflows/releases.yml`，在 Node.js 22 下使用 Yarn 1.22.22 冻结安装依赖、运行测试、检查版本并构建。
+- Release 使用 GitHub CLI 的 `gh release create --generate-notes --verify-tag` 自动生成说明并上传资产；不得恢复已弃用的 `actions/create-release` 或 `actions/upload-release-asset`。
 - Release 只上传 `main.js` 和 `manifest.json`；如将来需要样式可上传 `styles.css`，不再上传额外 ZIP。历史 Release 不自动删除或覆盖。
 - 发布工作流在构建后、创建 Release 前，通过固定提交 SHA 的 `actions/attest` 为所有发布文件生成来源证明；保留 `contents: write`、`id-token: write` 和 `attestations: write` 权限。新增发布文件时同步证明路径，证明失败不得继续发布。
 - 发布后下载产物，逐一运行 `gh attestation verify <文件路径> --repo Natumsol/obsidian-pangu` 核验证明；本地测试通过不代表 GitHub 来源证明已生成。

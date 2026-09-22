@@ -33,10 +33,18 @@ test("API dependency is pinned and the release uses the checked-in lockfile", ()
   assert.match(read(".github/workflows/releases.yml"), /--frozen-lockfile/);
 });
 
-test("release uploads only the supported plugin files", () => {
+test("release publishes supported plugin files with generated notes", () => {
   const workflow = read(".github/workflows/releases.yml");
-  const assets = [...workflow.matchAll(/asset_name:\s*(.+)/g)].map((m) => m[1].trim());
-  assert.deepEqual(assets.sort(), ["main.js", "manifest.json"]);
+  const releaseStep = workflow
+    .split(/^      - /m)
+    .find((step) => step.includes("gh release create"));
+  assert.ok(releaseStep, "release must be created by GitHub CLI");
+  assert.match(releaseStep, /--generate-notes/);
+  assert.match(releaseStep, /--verify-tag/);
+  assert.match(releaseStep, /\bdist\/main\.js\b/);
+  assert.match(releaseStep, /\bmanifest\.json\b/);
+  assert.doesNotMatch(releaseStep, /\.zip\b|\bstyles\.css\b/);
+  assert.doesNotMatch(workflow, /actions\/(?:create-release|upload-release-asset)@/);
 });
 
 test("release attests every uploaded asset after building and before publishing", () => {
@@ -49,7 +57,7 @@ test("release attests every uploaded asset after building and before publishing"
   const steps = workflow.split(/^      - /m).slice(1);
   const buildIndex = steps.findIndex((step) => step.includes("npm run build"));
   const attestIndex = steps.findIndex((step) => /uses: actions\/attest@/.test(step));
-  const releaseIndex = steps.findIndex((step) => /uses: actions\/create-release@/.test(step));
+  const releaseIndex = steps.findIndex((step) => step.includes("gh release create"));
   assert.ok(buildIndex >= 0 && attestIndex > buildIndex && releaseIndex > attestIndex);
   const buildStep = steps[buildIndex];
   assert.match(buildStep, /npm run test:e2e:run/);
@@ -65,7 +73,9 @@ test("release attests every uploaded asset after building and before publishing"
   assert.ok(subjects, "attestation must explicitly list release asset paths");
   const paths = subjects.trim().split(/\s+/).sort();
   assert.deepEqual(paths, ["dist/main.js", "manifest.json"]);
-  const uploadedPaths = [...workflow.matchAll(/asset_path:\s*(.+)/g)]
-    .map((match) => match[1].trim().replace(/^\.\//, "")).sort();
+  const releaseStep = steps[releaseIndex];
+  const uploadedPaths = ["dist/main.js", "manifest.json"]
+    .filter((path) => releaseStep.includes(path))
+    .sort();
   assert.deepEqual(paths, uploadedPaths);
 });
