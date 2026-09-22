@@ -1,0 +1,164 @@
+package.json
+  45a964fa3eba07a9 9-10,27-31,35,42-44
+docs/acceptance-2026-09-21.md
+  45a964fa3eba07a9 1-44
+docs/research/obsidian-e2e.md
+  45a964fa3eba07a9 1-132
+src/main.ts
+  45a964fa3eba07a9 14-16,24-27,83,136
+tests/e2e/fixtures/base-vault/Acceptance.md
+  45a964fa3eba07a9 1-11
+tests/e2e/specs/pangu.e2e.mjs
+  45a964fa3eba07a9 1-224
+.github/workflows/validate.yml
+  45a964fa3eba07a9 1-45
+src/editing.ts
+  45a964fa3eba07a9 59-63,90-96
+manifest.json
+  45a964fa3eba07a9 5
+.github/workflows/releases.yml
+  45a964fa3eba07a9 22-29,32-33,40-47
+.gitignore
+  45a964fa3eba07a9 12-17
+tests/regressions.test.cjs
+  45a964fa3eba07a9 406-410
+HISTORY.md
+  45a964fa3eba07a9 10-13,18
+README.md
+  45a964fa3eba07a9 46-47,80-90,94-97
+tests/distribution.test.cjs
+  45a964fa3eba07a9 18-19,54-59
+tests/e2e/fixtures/base-vault/.obsidian/app.json
+  45a964fa3eba07a9 1-5
+tests/e2e/wdio.conf.mjs
+  45a964fa3eba07a9 1-46
+AGENTS.md
+  45a964fa3eba07a9 24,26-27,33,37,48
+scripts/e2e/prepare.mjs
+  45a964fa3eba07a9 1-36
+docs/acceptance-2026-09-22.md
+  45a964fa3eba07a9 1-62
+tests/editor.test.cjs
+  45a964fa3eba07a9 46-59,92-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "b9c7e76cc78134f371b6cdff3a31dda4c15b9907",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 851,
+      "total_deletions": 164,
+      "accepted_lines": 732,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "tests/e2e/specs/pangu.e2e.mjs": {
+          "additions": 303,
+          "deletions": 79,
+          "accepted_lines": 224
+        },
+        "tests/editor.test.cjs": {
+          "additions": 27,
+          "deletions": 12,
+          "accepted_lines": 27
+        },
+        "docs/research/obsidian-e2e.md": {
+          "additions": 152,
+          "deletions": 20,
+          "accepted_lines": 132
+        },
+        "docs/acceptance-2026-09-21.md": {
+          "additions": 47,
+          "deletions": 3,
+          "accepted_lines": 44
+        },
+        "tests/distribution.test.cjs": {
+          "additions": 11,
+          "deletions": 1,
+          "accepted_lines": 10
+        },
+        "tests/regressions.test.cjs": {
+          "additions": 6,
+          "deletions": 2,
+          "accepted_lines": 5
+        },
+        "manifest.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "README.md": {
+          "additions": 18,
+          "deletions": 9,
+          "accepted_lines": 17
+        },
+        "scripts/e2e/prepare.mjs": {
+          "additions": 36,
+          "accepted_lines": 36
+        },
+        "tests/e2e/fixtures/base-vault/.obsidian/app.json": {
+          "additions": 5,
+          "accepted_lines": 5
+        },
+        "src/main.ts": {
+          "additions": 9,
+          "deletions": 3,
+          "accepted_lines": 9
+        },
+        ".github/workflows/validate.yml": {
+          "additions": 45,
+          "accepted_lines": 45
+        },
+        "tests/e2e/fixtures/base-vault/Acceptance.md": {
+          "additions": 11,
+          "accepted_lines": 11
+        },
+        "src/editing.ts": {
+          "additions": 14,
+          "deletions": 18,
+          "accepted_lines": 12
+        },
+        "HISTORY.md": {
+          "additions": 6,
+          "deletions": 1,
+          "accepted_lines": 5
+        },
+        "docs/acceptance-2026-09-22.md": {
+          "additions": 65,
+          "deletions": 3,
+          "accepted_lines": 62
+        },
+        "tests/e2e/wdio.conf.mjs": {
+          "additions": 46,
+          "accepted_lines": 46
+        },
+        "package.json": {
+          "additions": 19,
+          "deletions": 9,
+          "accepted_lines": 11
+        },
+        ".gitignore": {
+          "additions": 6,
+          "deletions": 1,
+          "accepted_lines": 6
+        },
+        ".github/workflows/releases.yml": {
+          "additions": 18,
+          "accepted_lines": 18
+        },
+        "AGENTS.md": {
+          "additions": 6,
+          "deletions": 2,
+          "accepted_lines": 6
+        }
+      }
+    }
+  }
+}
