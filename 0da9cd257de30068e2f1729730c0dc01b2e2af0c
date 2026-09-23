@@ -1,0 +1,90 @@
+AGENTS.md
+  45a964fa3eba07a9 55
+HISTORY.md
+  45a964fa3eba07a9 10-16
+src/automatic-spacing.ts
+  45a964fa3eba07a9 29,125,135,137,158,160
+manifest.json
+  45a964fa3eba07a9 4
+.github/workflows/releases.yml
+  45a964fa3eba07a9 64
+eslint.config.mjs
+  45a964fa3eba07a9 17-20
+tests/e2e/specs/pangu.e2e.mjs
+  45a964fa3eba07a9 253-301
+tests/editor.test.cjs
+  45a964fa3eba07a9 274,276,300-329
+tests/distribution.test.cjs
+  45a964fa3eba07a9 72
+package.json
+  45a964fa3eba07a9 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "0da9cd257de30068e2f1729730c0dc01b2e2af0c",
+  "prompts": {
+    "45a964fa3eba07a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c2e0-2233-7023-beac-007fe5673cec",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "青岚",
+      "messages": [],
+      "total_additions": 159,
+      "total_deletions": 63,
+      "accepted_lines": 106,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "HISTORY.md": {
+          "additions": 7,
+          "accepted_lines": 7
+        },
+        "manifest.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "eslint.config.mjs": {
+          "additions": 4,
+          "deletions": 1,
+          "accepted_lines": 4
+        },
+        "tests/e2e/specs/pangu.e2e.mjs": {
+          "additions": 104,
+          "deletions": 53,
+          "accepted_lines": 51
+        },
+        "package.json": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "AGENTS.md": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        ".github/workflows/releases.yml": {
+          "additions": 1,
+          "accepted_lines": 1
+        },
+        "src/automatic-spacing.ts": {
+          "additions": 6,
+          "deletions": 5,
+          "accepted_lines": 6
+        },
+        "tests/distribution.test.cjs": {
+          "additions": 1,
+          "accepted_lines": 1
+        },
+        "tests/editor.test.cjs": {
+          "additions": 33,
+          "deletions": 1,
+          "accepted_lines": 33
+        }
+      }
+    }
+  }
+}
