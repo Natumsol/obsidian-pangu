@@ -61,4 +61,5 @@ jobs:
             dist/main.js \
             manifest.json \
             --notes-file release-notes.md \
+            --title "$GITHUB_REF_NAME" \
             --verify-tag

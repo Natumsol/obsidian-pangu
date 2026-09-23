@@ -26,7 +26,7 @@ function unfinishedMarkup(text: string, end: number): boolean {
   let destination = 0;
   let angle = false;
   let quote = "";
-  const tokens = /\\[\s\S]|`+|~{3,}|\$+|[\[\]()<>'"]/g;
+  const tokens = /\\[\s\S]|`+|~{3,}|\$+|[[\]()<>'"]/g;
   let match: RegExpExecArray | null;
   while ((match = tokens.exec(prefix)) !== null) {
     const run = match[0];
@@ -122,6 +122,7 @@ export function bindAutomaticSpacing(
   view: MarkdownView,
   enabled: () => boolean
 ): () => void {
+  const ownerWindow = view.containerEl.ownerDocument.defaultView ?? window;
   type Snapshot = {
     editor: Editor;
     file: MarkdownView["file"];
@@ -131,9 +132,9 @@ export function bindAutomaticSpacing(
   let snapshot: Snapshot | undefined;
   let composing = false;
   let finishingComposition = false;
-  let timer: ReturnType<typeof setTimeout> | undefined;
+  let timer: number | undefined;
   const cancel = () => {
-    clearTimeout(timer);
+    ownerWindow.clearTimeout(timer);
     timer = undefined;
     snapshot = undefined;
     finishingComposition = false;
@@ -154,9 +155,9 @@ export function bindAutomaticSpacing(
     };
   };
   const schedule = () => {
-    clearTimeout(timer);
+    ownerWindow.clearTimeout(timer);
     // Wait until the editor has consumed the input/compositionend event.
-    timer = setTimeout(() => {
+    timer = ownerWindow.setTimeout(() => {
       const previous = snapshot;
       cancel();
       if (

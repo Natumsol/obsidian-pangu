@@ -250,4 +250,55 @@ describe("PanGu in an isolated Obsidian client", function () {
       await browser.executeObsidian(({ app }) => app.setting.close());
     }
   });
+
+  it("adds spacing after typing in a popout editor", async function () {
+    const initialWindows = await browser.getWindowHandles();
+    try {
+      await browser.executeObsidian(async ({ app, plugins }) => {
+        const plugin = plugins.obsidianPangu;
+        plugin.settings.autoSpacing = true;
+        await plugin.saveSettings();
+        const leaf = app.workspace.openPopoutLeaf();
+        await leaf.openFile(app.vault.getAbstractFileByPath("Acceptance.md"));
+      });
+      await browser.waitUntil(
+        async () => (await browser.getWindowHandles()).length > initialWindows.length,
+        { timeoutMsg: "Obsidian popout window did not open" }
+      );
+      const popoutWindow = (await browser.getWindowHandles()).find(
+        (handle) => !initialWindows.includes(handle)
+      );
+      await browser.switchToWindow(popoutWindow);
+      await browser.waitUntil(() =>
+        browser.executeObsidian(({ app, plugins }) => {
+          const leaf = app.workspace.getLeavesOfType("markdown").find(
+            (candidate) => candidate.view.containerEl.ownerDocument === document
+          );
+          return plugins.obsidianPangu.automaticBindings.has(leaf?.view);
+        })
+      );
+      await browser.executeObsidian(({ app }) => {
+        const leaf = app.workspace.getLeavesOfType("markdown").find(
+          (candidate) => candidate.view.containerEl.ownerDocument === document
+        );
+        const editor = leaf.view.editor;
+        editor.setValue("中文");
+        editor.setCursor({ line: 0, ch: 2 });
+        editor.focus();
+      });
+      await browser.keys("A");
+      await browser.waitUntil(() =>
+        browser.executeObsidian(({ app }) => {
+          const leaf = app.workspace.getLeavesOfType("markdown").find(
+            (candidate) => candidate.view.containerEl.ownerDocument === document
+          );
+          return leaf?.view.editor.getValue() === "中文 A";
+        })
+      );
+    } finally {
+      // The isolated runner closes the popout on teardown. WebDriver closing
+      // it earlier releases the primary IPC context on Obsidian 1.0.3.
+      await browser.switchToWindow(primaryWindow);
+    }
+  });
 });

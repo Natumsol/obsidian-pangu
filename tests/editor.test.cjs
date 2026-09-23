@@ -271,8 +271,9 @@ test("#32: dollar signs inside finished code do not suppress later prose", () =>
   }
 });
 
-function inputHarness(initial, enabled = true) {
+function inputHarness(initial, enabled = true, ownerWindow = globalThis) {
   const containerEl = new EventTarget();
+  containerEl.ownerDocument = { defaultView: ownerWindow };
   const editor = makeEditor(initial);
   editor.setCursor(editor.offsetToPos(initial.length));
   const view = { containerEl, editor, file: { path: "note.md" } };
@@ -295,6 +296,37 @@ function inputHarness(initial, enabled = true) {
   return { view, editor, state, emit, set, type, dispose };
 }
 const flush = () => new Promise((resolve) => setTimeout(resolve, 10));
+
+test("#32: a popout editor uses its own window to schedule and cancel input", () => {
+  const pending = new Map();
+  let nextId = 1;
+  const popoutWindow = {
+    setTimeout(callback) {
+      const id = nextId++;
+      pending.set(id, callback);
+      return id;
+    },
+    clearTimeout(id) {
+      pending.delete(id);
+    },
+  };
+  const h = inputHarness("中文", true, popoutWindow);
+  try {
+    h.type("中文a");
+    assert.equal(pending.size, 1);
+    for (const callback of pending.values()) callback();
+    pending.clear();
+    assert.equal(h.editor.value, "中文 a");
+
+    h.type("中文 a文");
+    assert.equal(pending.size, 1);
+    h.emit("blur");
+    assert.equal(pending.size, 0);
+    assert.equal(h.editor.value, "中文 a文");
+  } finally {
+    h.dispose();
+  }
+});
 
 test("#32: input events respect completed tasks and unfinished multiline markup", async () => {
   for (const [before, insert, expected] of [

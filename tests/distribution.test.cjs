@@ -69,6 +69,7 @@ test("release publishes supported plugin files with changelog notes", () => {
   assert.ok(notesIndex >= 0 && releaseIndex > notesIndex);
   assert.ok(releaseStep, "release must be created by GitHub CLI");
   assert.match(releaseStep, /--notes-file release-notes\.md/);
+  assert.match(releaseStep, /--title "\$GITHUB_REF_NAME"/);
   assert.doesNotMatch(releaseStep, /--generate-notes/);
   assert.match(releaseStep, /--verify-tag/);
   assert.match(releaseStep, /\bdist\/main\.js\b/);

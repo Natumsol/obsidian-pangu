@@ -14,6 +14,9 @@ export default [
       },
     },
     plugins: { obsidianmd },
-    rules: { "obsidianmd/no-unsupported-api": "error" },
+    rules: {
+      "obsidianmd/no-unsupported-api": "error",
+      "no-useless-escape": "error",
+    },
   },
 ];
